@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Stock Management App</string>
+    <string name="logInGoolge">Login with Google+</string>
+    <string name="logInFacebook">Login with Facebook</string>
+    <string name="addItem">Add Item</string>
+    <string name="profileManagement">Edit Profile</string>
+    <string name="field_Store_name">Store Name / Business Name</string>
+    <string name="field_store_address">Address</string>
+    <string name="btn_save_profile">Save Store Profile</string>
+    <string name="webClientId">26401326836-mjbcvd9galk9ju4g9ve5am52ai7b9lf0.apps.googleusercontent.com</string>
+    <string name="contact_hint">Contact Number / Email Address</string>
+</resources>

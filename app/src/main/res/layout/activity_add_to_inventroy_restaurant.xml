@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/slightGrey"
+    tools:context="com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.AddToInventoryRestuarant">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        app:title="@string/addItem"
+        android:textAlignment="center"
+        app:titleTextColor="@color/colorAccent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:src="@drawable/bgblurer"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:id="@+id/product_banner"
+        android:layout_height="@dimen/bannerHeight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        app:cardCornerRadius="5dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        app:cardElevation="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/product_banner">
+       <android.support.constraint.ConstraintLayout
+           android:layout_width="match_parent"
+           android:paddingBottom="8dp"
+           android:layout_height="wrap_content">
+
+           <android.support.design.widget.TextInputLayout
+               android:id="@+id/container_menu_code"
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_marginRight="8dp"
+               android:layout_marginLeft="24dp"
+               android:layout_marginTop="8dp"
+               android:hint="Menu Code"
+               app:layout_constraintEnd_toStartOf="@+id/divider"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toBottomOf="@+id/container_store_name">
+
+               <android.support.design.widget.TextInputEditText
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:backgroundTint="@color/colorAccent"
+                   android:drawablePadding="5dp"
+                   android:text="Menu Code"
+                   android:textColor="@color/colorText"
+
+                   />
+           </android.support.design.widget.TextInputLayout>
+
+           <android.support.design.widget.TextInputLayout
+               android:id="@+id/container_store_name"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginEnd="24dp"
+               android:layout_marginStart="24dp"
+               android:layout_marginTop="32dp"
+               android:hint="Item Name"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toTopOf="parent">
+
+               <android.support.design.widget.TextInputEditText
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:backgroundTint="@color/colorAccent"
+                   android:drawablePadding="5dp"
+                   android:text="Item One"
+                   android:textColor="@color/colorText" />
+           </android.support.design.widget.TextInputLayout>
+
+           <android.support.design.widget.TextInputLayout
+               android:id="@+id/container_item_price"
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_marginRight="24dp"
+               android:layout_marginLeft="8dp"
+               android:layout_marginTop="8dp"
+               android:hint="Item Price"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintStart_toEndOf="@+id/divider"
+               app:layout_constraintTop_toBottomOf="@+id/container_store_name">
+
+               <android.support.design.widget.TextInputEditText
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:backgroundTint="@color/colorAccent"
+                   android:drawablePadding="5dp"
+                   android:text="$ 24.00"
+                   android:textColor="@color/colorText"
+
+                   />
+           </android.support.design.widget.TextInputLayout>
+
+           <View
+               android:id="@+id/divider"
+               android:layout_width="1dp"
+               android:layout_height="50dp"
+               android:layout_marginEnd="8dp"
+               android:layout_marginStart="8dp"
+               android:layout_marginTop="8dp"
+               android:backgroundTint="@android:color/transparent"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toBottomOf="@+id/container_store_name">
+
+
+           </View>
+
+           <android.support.design.widget.TextInputLayout
+               android:id="@+id/container_des"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginEnd="24dp"
+               android:layout_marginStart="24dp"
+               android:layout_marginTop="8dp"
+               android:hint="Menu Description"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintHorizontal_bias="0.0"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toBottomOf="@+id/container_menu_code">
+
+               <android.support.design.widget.TextInputEditText
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:backgroundTint="@color/colorAccent"
+                   android:drawablePadding="5dp"
+                   android:text="Menu Description"
+                   android:textColor="@color/colorText" />
+           </android.support.design.widget.TextInputLayout>
+           <Button
+               android:layout_width="wrap_content"
+               android:layout_height="@dimen/saveButtonHeight"
+               android:layout_marginBottom="8dp"
+               android:layout_marginEnd="8dp"
+               android:layout_marginStart="8dp"
+               android:layout_marginTop="16dp"
+               android:background="@drawable/butoon_save"
+               android:paddingLeft="15dp"
+               android:paddingRight="15dp"
+               android:text="Save To inventory"
+               android:textAllCaps="false"
+               android:textColor="@color/colorWhite"
+               app:layout_constraintBottom_toBottomOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toBottomOf="@+id/container_des" />
+       </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
+
+
+
+
+</android.support.constraint.ConstraintLayout>

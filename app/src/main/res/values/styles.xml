@@ -12,6 +12,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorText</item>
         <item tools:targetApi = "19" name="android:windowTranslucentStatus">true</item>
     </style>
     <style name="CustomActionBar" parent="Theme.AppCompat.Light.NoActionBar">

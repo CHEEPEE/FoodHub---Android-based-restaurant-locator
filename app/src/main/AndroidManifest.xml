@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.pointofsalesandroid.androidbasedpos_inventory">
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name="android.support.multidex.MultiDexApplication"
@@ -11,7 +12,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".LogInActivity"
             android:theme="@style/AppThemeNoActionBar">
@@ -22,12 +22,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Inventory"
+            android:name=".Restaurant.InventoryRestaurant"
             android:theme="@style/AppThemeNoActionBar" />
         <activity
-            android:name=".AddToInventory"
+            android:name=".Restaurant.AddToInventoryRestuarant"
             android:theme="@style/AppThemeNoActionBar" />
-        <activity android:name=".ProfileManagement"
+        <activity
+            android:name=".ProfileManagement"
+            android:theme="@style/AppThemeNoActionBar" />
+        <activity android:name=".RetailStore.AddToInvetoryRetailStore"
             android:theme="@style/AppThemeNoActionBar"
             ></activity>
     </application>

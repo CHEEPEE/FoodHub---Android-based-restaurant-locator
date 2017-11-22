@@ -22,10 +22,19 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.InventoryRestaurant;
+import com.pointofsalesandroid.androidbasedpos_inventory.RetailStore.InventoryRetailStore;
 
 public class LogInActivity extends AppCompatActivity {
-ConstraintLayout parent;
-Button googleLoginButton;
+    ConstraintLayout parent;
+    Button googleLoginButton;
+    DatabaseReference mDatabase;
+    FirebaseAuth mAunt;
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
@@ -38,6 +47,7 @@ Button googleLoginButton;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("userProfile");
         parent = (ConstraintLayout) findViewById(R.id.login_parent_layout);
         parent.setPadding(0, getStatusBarHeight(), 0, 0);
         // Configure Google Sign In
@@ -110,9 +120,39 @@ Button googleLoginButton;
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Intent i  = new Intent(LogInActivity.this,ProfileManagement.class);
-                            startActivity(i);
+                            final FirebaseUser user = mAuth.getCurrentUser();
+                            /*Intent i  = new Intent(LogInActivity.this,ProfileManagement.class);
+                            startActivity(i);*/
+                            mDatabase.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.getValue() == null){
+                                        Intent i = new Intent(LogInActivity.this,ProfileManagement.class);
+                                        startActivity(i);
+                                    }else {
+                                       String storeType =  dataSnapshot.child("storeType").getValue().toString();
+                                       if (storeType.equals("retailStore")){
+                                           Intent i = new Intent(LogInActivity.this,InventoryRetailStore.class);
+                                           startActivity(i);
+                                       }if (storeType.equals("restaurant")){
+                                           Intent i = new Intent(LogInActivity.this, InventoryRestaurant.class);
+                                           startActivity(i);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+                           /* if (mDatabase.child(user.getUid())== null){
+                                Intent i = new Intent(LogInActivity.this,ProfileManagement.class);
+                                startActivity(i);
+                            }else {
+
+                            }*/
 
                         } else {
                             // If sign in fails, display a message to the user.

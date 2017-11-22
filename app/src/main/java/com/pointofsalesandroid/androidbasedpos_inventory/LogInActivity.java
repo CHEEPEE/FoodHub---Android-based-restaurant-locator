@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -35,6 +36,7 @@ public class LogInActivity extends AppCompatActivity {
     Button googleLoginButton;
     DatabaseReference mDatabase;
     FirebaseAuth mAunt;
+    ProgressBar logInProgress;
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
@@ -167,6 +169,8 @@ public class LogInActivity extends AppCompatActivity {
         super.onStart();
         if (mAuth.getCurrentUser()!=null){
             final FirebaseUser user = mAuth.getCurrentUser();
+            logInProgress = (ProgressBar) findViewById(R.id.loginProgress);
+            logInProgress.setVisibility(View.VISIBLE);
             mDatabase.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {

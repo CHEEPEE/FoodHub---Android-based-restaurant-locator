@@ -102,12 +102,6 @@ public class LogInActivity extends AppCompatActivity {
             }
         }
     }
-        @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-    }
-
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
@@ -139,6 +133,7 @@ public class LogInActivity extends AppCompatActivity {
                                            startActivity(i);
                                         }
                                     }
+                                    finish();
                                 }
 
                                 @Override
@@ -167,7 +162,38 @@ public class LogInActivity extends AppCompatActivity {
 
 
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mAuth.getCurrentUser()!=null){
+            final FirebaseUser user = mAuth.getCurrentUser();
+            mDatabase.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() == null){
+                        Intent i = new Intent(LogInActivity.this,ProfileManagement.class);
+                        startActivity(i);
+                    }else {
+                        String storeType =  dataSnapshot.child("storeType").getValue().toString();
+                        if (storeType.equals("retailStore")){
+                            Intent i = new Intent(LogInActivity.this,InventoryRetailStore.class);
+                            startActivity(i);
+                        }if (storeType.equals("restaurant")){
+                            Intent i = new Intent(LogInActivity.this, InventoryRestaurant.class);
+                            startActivity(i);
+                        }
+                    }
+                    finish();
+                }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+    }
 
 
 

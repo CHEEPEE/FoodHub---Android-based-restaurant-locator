@@ -3,6 +3,7 @@ package com.pointofsalesandroid.androidbasedpos_inventory;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,23 +20,27 @@ public class ProfileManagement extends AppCompatActivity {
     Uri imageToUploadUri;
     EditText fieldStorename,fieldStoreAddress, fieldStoreContact;
     Button submitInformation;
-    ImageView StoreBanner;
-    ImageView StoreProfileImage;
+    ImageView StoreBanner,StoreProfileImage, ic_restaurant,ic_retailStore;
     ImageView tempImage;
     Uri bannerURL,iconURL;
     String imageType;
+    String storetype;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_management);
         submitInformation = (Button) findViewById(R.id.submitInformation);
         StoreBanner = (ImageView) findViewById(R.id.storeBanner);
+        ic_restaurant = (ImageView) findViewById(R.id.ic_restaurant);
+        ic_retailStore = (ImageView) findViewById(R.id.ic_retailStore);
         StoreProfileImage = (ImageView)findViewById(R.id.store_profile_icon);
         submitInformation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (validateForm(fieldStorename,fieldStoreAddress, fieldStoreContact)){
+                    if (bannerURL!=null && iconURL != null && storetype !=null){
 
+                    }
                 }
 
             }
@@ -50,6 +55,20 @@ public class ProfileManagement extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             performFileSearch(StoreProfileImage,"profile");
+            }
+        });
+        ic_restaurant.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setstoreType(ic_restaurant,ic_retailStore);
+                storetype = "restuarant";
+            }
+        });
+        ic_retailStore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setstoreType(ic_retailStore,ic_restaurant);
+                storetype = "retailstore";
             }
         });
     }
@@ -142,6 +161,14 @@ public class ProfileManagement extends AppCompatActivity {
         return valid;
     }
     private void validateStoreType(){
+
+    }
+
+    private void setstoreType(ImageView setThis, ImageView unsetThis){
+        setThis.setBackground(getResources().getDrawable(R.drawable.butoon_save));
+        setThis.setColorFilter(ContextCompat.getColor(ProfileManagement.this, R.color.colorWhite), android.graphics.PorterDuff.Mode.SRC_IN);
+        unsetThis.setBackground(null);
+        unsetThis.setColorFilter(ContextCompat.getColor(ProfileManagement.this, R.color.colorAccent), android.graphics.PorterDuff.Mode.SRC_IN);
 
     }
 }

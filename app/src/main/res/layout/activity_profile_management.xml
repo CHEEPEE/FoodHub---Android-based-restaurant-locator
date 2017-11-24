@@ -30,60 +30,24 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/bgblurer" />
+                app:srcCompat="@color/colorAccent" />
 
 
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
-                app:cardBackgroundColor="@color/colorWhite"
-                app:cardCornerRadius="5dp"
-                app:cardElevation="5dp"
+            <Button
+                android:id="@+id/submitInformation"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:width="200dp"
+                android:background="@drawable/butoon_save"
+                android:text="@string/btn_save_profile"
+                android:textColor="@color/colorWhite"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/store_profile_icon">
-
-                <android.support.constraint.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dp">
-
-                    <RelativeLayout
-                        android:id="@+id/store_profile_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:background="@color/colorAccent">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:text="Store Informations"
-                            android:textAllCaps="true"
-                            android:textColor="#ffffff"
-                            android:textSize="20sp" />
-
-                    </RelativeLayout>
-
-                    <Button
-                        android:id="@+id/submitInformation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="32dp"
-                        android:width="200dp"
-                        android:background="@drawable/butoon_save"
-                        android:text="@string/btn_save_profile"
-                        android:textColor="@color/colorWhite"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/label_store_type" />
+                app:layout_constraintTop_toBottomOf="@+id/field_contact" />
 
 
                     <android.support.design.widget.TextInputLayout
@@ -92,18 +56,18 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="24dp"
                         android:hint="@string/field_Store_name"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/store_profile_label">
+                        app:layout_constraintTop_toBottomOf="@+id/storeBanner">
 
                         <android.support.design.widget.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:backgroundTint="@color/colorAccent"
-
+                            android:id="@+id/input_name"
                             android:drawablePadding="10dp" />
                     </android.support.design.widget.TextInputLayout>
 
@@ -122,6 +86,7 @@
                         <android.support.design.widget.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:id="@+id/input_address"
                             android:backgroundTint="@color/colorAccent"
                             android:drawablePadding="10dp" />
                     </android.support.design.widget.TextInputLayout>
@@ -137,69 +102,32 @@
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/field_address">
-
-
                         <android.support.design.widget.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:backgroundTint="@color/colorAccent"
+                            android:id="@+id/input_contact"
                             android:drawablePadding="10dp" />
                     </android.support.design.widget.TextInputLayout>
 
-                    <TextView
-                        android:id="@+id/label_store_type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="32dp"
-                        android:layout_marginTop="16dp"
-                        android:text="Store Type"
-                        android:textColor="@color/colorAccent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/field_contact" />
-
-                    <ImageView
-                        android:id="@+id/ic_restaurant"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginLeft="24dp"
-                        android:layout_marginTop="16dp"
-                        android:padding="5dp"
-                        android:src="@drawable/ic_restaurant"
-                        app:layout_constraintLeft_toRightOf="@id/label_store_type"
-                        app:layout_constraintTop_toBottomOf="@id/field_contact" />
-
-                    <ImageView
-                        android:id="@+id/ic_retailStore"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginTop="16dp"
-                        android:padding="5dp"
-                        android:src="@drawable/ic_store"
-                        app:layout_constraintLeft_toRightOf="@id/ic_restaurant"
-                        app:layout_constraintTop_toBottomOf="@id/field_contact" />
-
-                </android.support.constraint.ConstraintLayout>
-
-            </android.support.v7.widget.CardView>
-
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/store_profile_icon"
+
                 android:layout_width="@dimen/profileICon"
                 android:layout_height="@dimen/profileICon"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/store_profile"
                 app:civ_border_color="@color/colorWhite"
-                app:civ_border_width="1dp"
-                app:civ_circle_background_color="@color/colorWhite"
+                app:civ_border_width="2dp"
+                android:id="@+id/store_profile_icon"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/profile_icon_background"
+                android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.22000003" />
+                app:layout_constraintVertical_bias="0.19999999" />
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </android.support.constraint.ConstraintLayout>

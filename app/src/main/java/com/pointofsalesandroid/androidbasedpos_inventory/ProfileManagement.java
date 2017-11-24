@@ -2,7 +2,10 @@ package com.pointofsalesandroid.androidbasedpos_inventory;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.OpenableColumns;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,34 +15,56 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class ProfileManagement extends AppCompatActivity {
     private static final int READ_REQUEST_CODE = 42;
     Uri imageToUploadUri;
     EditText fieldStorename,fieldStoreAddress, fieldStoreContact;
     Button submitInformation;
-    ImageView StoreBanner,StoreProfileImage, ic_restaurant,ic_retailStore;
+    DatabaseReference mDatabase;
+    ImageView StoreBanner,StoreProfileImage;
     ImageView tempImage;
     Uri bannerURL,iconURL;
     String imageType;
     String storetype;
+    FirebaseAuth mAuth;
+    String downloadURl;
+    private StorageReference mStorageRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_management);
         submitInformation = (Button) findViewById(R.id.submitInformation);
+        mAuth = FirebaseAuth.getInstance();
+
+        fieldStorename = (EditText) findViewById(R.id.input_name);
+        fieldStoreAddress = (EditText) findViewById(R.id.input_address);
+        fieldStoreContact = (EditText) findViewById(R.id.input_contact);
         StoreBanner = (ImageView) findViewById(R.id.storeBanner);
-        ic_restaurant = (ImageView) findViewById(R.id.ic_restaurant);
-        ic_retailStore = (ImageView) findViewById(R.id.ic_retailStore);
         StoreProfileImage = (ImageView)findViewById(R.id.store_profile_icon);
+        mStorageRef = FirebaseStorage.getInstance().getReference();
         submitInformation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (validateForm(fieldStorename,fieldStoreAddress, fieldStoreContact)){
-                    if (bannerURL!=null && iconURL != null && storetype !=null){
-
+                if (validateForm(fieldStorename,fieldStoreAddress,fieldStoreContact)){
+                    if (bannerURL!=null && iconURL!=null){
+                        toaster("true");
+                    }else {
+                        toaster("missing banner of profile icon");
                     }
                 }
 
@@ -55,20 +80,6 @@ public class ProfileManagement extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             performFileSearch(StoreProfileImage,"profile");
-            }
-        });
-        ic_restaurant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setstoreType(ic_restaurant,ic_retailStore);
-                storetype = "restuarant";
-            }
-        });
-        ic_retailStore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setstoreType(ic_retailStore,ic_restaurant);
-                storetype = "retailstore";
             }
         });
     }
@@ -127,7 +138,10 @@ public class ProfileManagement extends AppCompatActivity {
     private void setImage(Uri uri,ImageView imageView){
        // floatClearImage.setVisibility(View.VISIBLE);
        // Picasso.with(CreatePostActivity.this).load(uri).resize(300,600).into(imageToUpload);
+
         Glide.with(ProfileManagement.this).load(uri).into(imageView);
+        imageView.setColorFilter(null);
+
 
     }
     // ************** form Validation *******************
@@ -150,7 +164,7 @@ public class ProfileManagement extends AppCompatActivity {
             storeAddress.setError(null);
         }
 
-        String contact = storeAddress.getText().toString();
+        String contact = storeContact.getText().toString();
         if (TextUtils.isEmpty(contact)) {
             storeContact.setError("Required.");
             valid = false;
@@ -160,15 +174,75 @@ public class ProfileManagement extends AppCompatActivity {
 
         return valid;
     }
-    private void validateStoreType(){
+
+    //*************************************** Submit Profile Info **************************
+    private void saveStoreProfile(String storename,String storeAddress,String storeContact,
+                                  Uri storeBannerURL, Uri storeProfileIconUrl){
+        String ImageCoverURL;
+
+
 
     }
 
-    private void setstoreType(ImageView setThis, ImageView unsetThis){
-        setThis.setBackground(getResources().getDrawable(R.drawable.butoon_save));
-        setThis.setColorFilter(ContextCompat.getColor(ProfileManagement.this, R.color.colorWhite), android.graphics.PorterDuff.Mode.SRC_IN);
-        unsetThis.setBackground(null);
-        unsetThis.setColorFilter(ContextCompat.getColor(ProfileManagement.this, R.color.colorAccent), android.graphics.PorterDuff.Mode.SRC_IN);
 
+    private void streamUploadAndGetDownloadURL(Uri ImageStorageURI){
+
+        if (ImageStorageURI!=null) {
+            InputStream storeBannerFile = null;
+            try {
+                storeBannerFile = getContentResolver().openInputStream(ImageStorageURI);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            StorageReference ImageStorageStore = mStorageRef.child("images/storeProfileImages" + File.separator+mAuth.getCurrentUser().getUid() + File.separator + getFileName(ImageStorageURI)
+                    +storeBannerFile.toString()+File.separator+getFileName(ImageStorageURI));
+            ImageStorageStore.putStream(storeBannerFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    @SuppressWarnings("VisibleForTests")
+                    String dlURL = taskSnapshot.getDownloadUrl().toString();
+                    setDownloadUrl(dlURL);
+                }
+
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+
+        }
+    }
+    private void setDownloadUrl(String url){
+        downloadURl = url;
+    }
+
+    //******************* Utilities ******************
+
+    private String getFileName(Uri uri) {
+
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
+    private void toaster(String text){
+        Toast.makeText(ProfileManagement.this,text,Toast.LENGTH_SHORT).show();
     }
 }

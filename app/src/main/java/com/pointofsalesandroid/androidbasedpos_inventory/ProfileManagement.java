@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,13 +21,17 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.StoreProfileInformationMap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileManagement extends AppCompatActivity {
     private static final int READ_REQUEST_CODE = 42;
@@ -38,11 +41,12 @@ public class ProfileManagement extends AppCompatActivity {
     DatabaseReference mDatabase;
     ImageView StoreBanner,StoreProfileImage;
     ImageView tempImage;
-    Uri bannerURL,iconURL;
+    Uri bannerUri, iconUri;
     String imageType;
     String storetype;
     FirebaseAuth mAuth;
-    String downloadURl;
+    String bannerDownloadURL,iconDownloadURL;
+    private boolean value;
     private StorageReference mStorageRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,13 +60,17 @@ public class ProfileManagement extends AppCompatActivity {
         fieldStoreContact = (EditText) findViewById(R.id.input_contact);
         StoreBanner = (ImageView) findViewById(R.id.storeBanner);
         StoreProfileImage = (ImageView)findViewById(R.id.store_profile_icon);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         submitInformation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (validateForm(fieldStorename,fieldStoreAddress,fieldStoreContact)){
-                    if (bannerURL!=null && iconURL!=null){
+                    if (bannerUri !=null && iconUri !=null){
                         toaster("true");
+                        uploadBanner(bannerUri,bannerDownloadURL);
+
+
                     }else {
                         toaster("missing banner of profile icon");
                     }
@@ -124,9 +132,9 @@ public class ProfileManagement extends AppCompatActivity {
                 setImage(uri,tempImage);
                 imageToUploadUri = uri;
                 if (imageType.equals("banner")){
-                    bannerURL = uri;
+                    bannerUri = uri;
                 }if (imageType.equals("profile")){
-                    iconURL = uri;
+                    iconUri = uri;
                 }
             }else {
                 System.out.println("null?");
@@ -177,16 +185,30 @@ public class ProfileManagement extends AppCompatActivity {
 
     //*************************************** Submit Profile Info **************************
     private void saveStoreProfile(String storename,String storeAddress,String storeContact,
-                                  Uri storeBannerURL, Uri storeProfileIconUrl){
-        String ImageCoverURL;
+                                  String storeBannerURL, String storeProfileIconUrl){
 
+        String key = mAuth.getUid();
+        StoreProfileInformationMap storeProfileInformationMap = new StoreProfileInformationMap(iconDownloadURL,
+                bannerDownloadURL,storename,storeAddress,storeContact);
 
+        Map<String,Object> postValue = storeProfileInformationMap.toMap();
+        Map<String,Object> childUpdates = new HashMap<>();
+        childUpdates.put(key,postValue);
+
+        mDatabase.child("storeProfiles")
+                .updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+               toaster("success");
+            }
+        });
 
     }
 
 
-    private void streamUploadAndGetDownloadURL(Uri ImageStorageURI){
 
+
+    private void uploadBanner(Uri ImageStorageURI, final String setToThis){
         if (ImageStorageURI!=null) {
             InputStream storeBannerFile = null;
             try {
@@ -201,7 +223,10 @@ public class ProfileManagement extends AppCompatActivity {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     @SuppressWarnings("VisibleForTests")
                     String dlURL = taskSnapshot.getDownloadUrl().toString();
-                    setDownloadUrl(dlURL);
+                    bannerDownloadURL = dlURL;
+                    uploadProfileIcon(iconUri,bannerDownloadURL);
+
+
                 }
 
             }).addOnFailureListener(new OnFailureListener() {
@@ -213,8 +238,39 @@ public class ProfileManagement extends AppCompatActivity {
 
         }
     }
-    private void setDownloadUrl(String url){
-        downloadURl = url;
+    private void uploadProfileIcon(Uri ImageStorageURI, final String setToThis){
+        if (ImageStorageURI!=null) {
+            InputStream storeBannerFile = null;
+            try {
+                storeBannerFile = getContentResolver().openInputStream(ImageStorageURI);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            StorageReference ImageStorageStore = mStorageRef.child("images/storeProfileImages" + File.separator+mAuth.getCurrentUser().getUid() + File.separator + getFileName(ImageStorageURI)
+                    +storeBannerFile.toString()+File.separator+getFileName(ImageStorageURI));
+            ImageStorageStore.putStream(storeBannerFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    @SuppressWarnings("VisibleForTests")
+                    String dlURL = taskSnapshot.getDownloadUrl().toString();
+                    setDownloadUrl(dlURL,iconDownloadURL);
+                    iconDownloadURL = dlURL;
+                    saveStoreProfile(fieldStorename.getText().toString(),fieldStoreAddress.getText().toString()
+                    ,fieldStoreContact.getText().toString(),bannerDownloadURL,iconDownloadURL);
+
+                }
+
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+
+        }
+    }
+    private void setDownloadUrl(String url,String setToThis){
+        setToThis = url;
     }
 
     //******************* Utilities ******************

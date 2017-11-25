@@ -29,7 +29,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.InventoryRestaurant;
-import com.pointofsalesandroid.androidbasedpos_inventory.RetailStore.InventoryRetailStore;
 
 public class LogInActivity extends AppCompatActivity {
     ConstraintLayout parent;
@@ -49,7 +48,7 @@ public class LogInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("userProfile");
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         parent = (ConstraintLayout) findViewById(R.id.login_parent_layout);
         parent.setPadding(0, getStatusBarHeight(), 0, 0);
         // Configure Google Sign In
@@ -127,13 +126,6 @@ public class LogInActivity extends AppCompatActivity {
                                         startActivity(i);
                                     }else {
                                        String storeType =  dataSnapshot.child("storeType").getValue().toString();
-                                       if (storeType.equals("retailStore")){
-                                           Intent i = new Intent(LogInActivity.this,InventoryRetailStore.class);
-                                           startActivity(i);
-                                       }if (storeType.equals("restaurant")){
-                                           Intent i = new Intent(LogInActivity.this, InventoryRestaurant.class);
-                                           startActivity(i);
-                                        }
                                     }
                                     finish();
                                 }
@@ -171,23 +163,18 @@ public class LogInActivity extends AppCompatActivity {
             final FirebaseUser user = mAuth.getCurrentUser();
             logInProgress = (ProgressBar) findViewById(R.id.loginProgress);
             logInProgress.setVisibility(View.VISIBLE);
-            mDatabase.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            mDatabase.child("storeProfiles").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.getValue() == null){
                         Intent i = new Intent(LogInActivity.this,ProfileManagement.class);
                         startActivity(i);
                     }else {
-                        String storeType =  dataSnapshot.child("storeType").getValue().toString();
-                        if (storeType.equals("retailStore")){
-                            Intent i = new Intent(LogInActivity.this,InventoryRetailStore.class);
-                            startActivity(i);
-                        }if (storeType.equals("restaurant")){
-                            Intent i = new Intent(LogInActivity.this, InventoryRestaurant.class);
-                            startActivity(i);
-                        }
+                       Utils.toster(LogInActivity.this,"Success getting Profile Credencials");
+                       Intent i =  new Intent(LogInActivity.this,InventoryRestaurant.class);
+                       startActivity(i);
                     }
-                    finish();
+
                 }
 
                 @Override

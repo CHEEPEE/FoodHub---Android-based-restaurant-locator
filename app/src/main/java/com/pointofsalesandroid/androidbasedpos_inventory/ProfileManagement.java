@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -25,7 +26,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.InventoryRestaurant;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.StoreProfileInformationMap;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,6 +49,8 @@ public class ProfileManagement extends AppCompatActivity {
     String storetype;
     FirebaseAuth mAuth;
     String bannerDownloadURL,iconDownloadURL;
+    AVLoadingIndicatorView savingProgress;
+    RelativeLayout progBlocker;
     private boolean value;
     private StorageReference mStorageRef;
     @Override
@@ -54,6 +59,8 @@ public class ProfileManagement extends AppCompatActivity {
         setContentView(R.layout.activity_profile_management);
         submitInformation = (Button) findViewById(R.id.submitInformation);
         mAuth = FirebaseAuth.getInstance();
+        progBlocker = (RelativeLayout) findViewById(R.id.prog);
+        savingProgress = (AVLoadingIndicatorView)findViewById(R.id.avi);
 
         fieldStorename = (EditText) findViewById(R.id.input_name);
         fieldStoreAddress = (EditText) findViewById(R.id.input_address);
@@ -69,6 +76,7 @@ public class ProfileManagement extends AppCompatActivity {
                     if (bannerUri !=null && iconUri !=null){
                         toaster("true");
                         uploadBanner(bannerUri,bannerDownloadURL);
+                        setProgress(true);
 
 
                     }else {
@@ -200,6 +208,8 @@ public class ProfileManagement extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                toaster("success");
+               Intent i = new Intent(ProfileManagement.this, InventoryRestaurant.class);
+               startActivity(i);
             }
         });
 
@@ -232,7 +242,8 @@ public class ProfileManagement extends AppCompatActivity {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-
+                    setProgress(false);
+                    toaster("Saving Failed");
                 }
             });
 
@@ -263,7 +274,8 @@ public class ProfileManagement extends AppCompatActivity {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-
+                    setProgress(false);
+                    toaster("Saving Failed");
                 }
             });
 
@@ -300,5 +312,14 @@ public class ProfileManagement extends AppCompatActivity {
 
     private void toaster(String text){
         Toast.makeText(ProfileManagement.this,text,Toast.LENGTH_SHORT).show();
+    }
+    public void setProgress(boolean boo){
+        if (boo){
+            savingProgress.setVisibility(View.VISIBLE);
+            progBlocker.setVisibility(View.VISIBLE);
+        }else {
+            savingProgress.setVisibility(View.INVISIBLE);
+            progBlocker.setVisibility(View.INVISIBLE);
+        }
     }
 }

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -29,19 +30,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.InventoryRestaurant;
+import com.wang.avi.AVLoadingIndicatorView;
 
 public class LogInActivity extends AppCompatActivity {
     ConstraintLayout parent;
     Button googleLoginButton;
     DatabaseReference mDatabase;
     FirebaseAuth mAunt;
-    ProgressBar logInProgress;
+    AVLoadingIndicatorView avi;
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
     // [END declare_auth]
+    RelativeLayout prog;
 
     private GoogleSignInClient mGoogleSignInClient;
     @Override
@@ -49,8 +52,10 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        prog = (RelativeLayout)findViewById(R.id.prog);
         parent = (ConstraintLayout) findViewById(R.id.login_parent_layout);
         parent.setPadding(0, getStatusBarHeight(), 0, 0);
+        avi = (AVLoadingIndicatorView) findViewById(R.id.avi);
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -83,6 +88,7 @@ public class LogInActivity extends AppCompatActivity {
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+        setProgress(true);
     }
 
     @Override
@@ -99,6 +105,7 @@ public class LogInActivity extends AppCompatActivity {
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
+                setProgress(false);
                 // ...
             }
         }
@@ -118,12 +125,13 @@ public class LogInActivity extends AppCompatActivity {
                             final FirebaseUser user = mAuth.getCurrentUser();
                             /*Intent i  = new Intent(LogInActivity.this,ProfileManagement.class);
                             startActivity(i);*/
-                            mDatabase.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            mDatabase.child("storeProfiles").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.getValue() == null){
                                         Intent i = new Intent(LogInActivity.this,ProfileManagement.class);
                                         startActivity(i);
+                                        finish();
                                     }else {
                                        String storeType =  dataSnapshot.child("storeType").getValue().toString();
                                     }
@@ -148,6 +156,7 @@ public class LogInActivity extends AppCompatActivity {
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(LogInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                           setProgress(false);
                         }
 
                     }
@@ -161,8 +170,8 @@ public class LogInActivity extends AppCompatActivity {
         super.onStart();
         if (mAuth.getCurrentUser()!=null){
             final FirebaseUser user = mAuth.getCurrentUser();
-            logInProgress = (ProgressBar) findViewById(R.id.loginProgress);
-            logInProgress.setVisibility(View.VISIBLE);
+
+            setProgress(true);
             mDatabase.child("storeProfiles").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -173,13 +182,14 @@ public class LogInActivity extends AppCompatActivity {
                        Utils.toster(LogInActivity.this,"Success getting Profile Credencials");
                        Intent i =  new Intent(LogInActivity.this,InventoryRestaurant.class);
                        startActivity(i);
+
                     }
 
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    setProgress(false);
                 }
             });
         }
@@ -202,5 +212,15 @@ public class LogInActivity extends AppCompatActivity {
             result = getResources().getDimensionPixelSize(resourceId);
         }
         return result;
+    }
+
+    public void setProgress(boolean boo){
+        if (boo){
+            avi.setVisibility(View.VISIBLE);
+            prog.setVisibility(View.VISIBLE);
+        }else {
+            avi.setVisibility(View.INVISIBLE);
+            prog.setVisibility(View.INVISIBLE);
+        }
     }
 }

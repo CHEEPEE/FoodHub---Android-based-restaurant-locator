@@ -132,8 +132,6 @@ public class LogInActivity extends AppCompatActivity {
                                         Intent i = new Intent(LogInActivity.this,ProfileManagement.class);
                                         startActivity(i);
                                         finish();
-                                    }else {
-                                       String storeType =  dataSnapshot.child("storeType").getValue().toString();
                                     }
                                     finish();
                                 }
@@ -182,6 +180,7 @@ public class LogInActivity extends AppCompatActivity {
                        Utils.toster(LogInActivity.this,"Success getting Profile Credencials");
                        Intent i =  new Intent(LogInActivity.this,InventoryRestaurant.class);
                        startActivity(i);
+                       finish();
 
                     }
 

@@ -8,4 +8,5 @@
     <color name="colorPrimary">#F5F5F5</color>
     <color name="colorWhite">#ffffff</color>
     <color name="slightGrey">#F5F5F5</color>
+    <color name="colorTeal">#263238</color>
 </resources>

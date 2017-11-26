@@ -8,9 +8,10 @@ import android.widget.Toast;
  */
 
 public class Utils {
-
+public static String storeItemCategory = "storeItemCategory";
 public static void toster(Context context,String Text){
     Toast.makeText(context,Text,Toast.LENGTH_LONG).show();
+
 }
 
 }

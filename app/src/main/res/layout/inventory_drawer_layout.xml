@@ -5,19 +5,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="250dp"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
+    android:background="@color/colorTeal"
     >
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/storeIcon"
         android:layout_width="@dimen/photoIcon"
         android:layout_height="@dimen/photoIcon"
-        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="24dp"
-        android:id="@+id/storeIcon"
         android:src="@drawable/sample"
         app:civ_border_color="@color/colorAccent"
         app:civ_border_width="2dp"
         app:civ_circle_background_color="@color/colorWhite"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,30 +26,37 @@
         android:id="@+id/textStoreName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:textAlignment="center"
+        android:layout_marginTop="8dp"
         android:text="Android Based POS"
-        app:layout_constraintLeft_toRightOf="@id/storeIcon"
-        app:layout_constraintTop_toTopOf="@+id/storeIcon" />
+        android:textSize="15sp"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/storeIcon" />
 
     <View
+        android:id="@+id/topDivider"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/storeIcon"></View>
+        app:layout_constraintTop_toBottomOf="@+id/textStoreName"></View>
 
     <View
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:id="@+id/bottomDivider"
         android:background="@color/colorAccent"
         app:layout_constraintBottom_toTopOf="@+id/text_signOut"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,7 +74,38 @@
         android:drawableTint="@color/colorAccent"
         android:text="Sign Out"
         android:textSize="20sp"
+        android:textAllCaps="true"
+        android:textColor="@color/colorWhite"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/categoryList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@+id/addCategory"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topDivider"></android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:drawablePadding="10dp"
+        android:textSize="15dp"
+        android:id="@+id/addCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:drawableLeft="@drawable/ic_add_circle_black_24dp"
+        android:drawableTint="@color/colorAccent"
+        android:text="Add Category"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintBottom_toTopOf="@id/bottomDivider"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 

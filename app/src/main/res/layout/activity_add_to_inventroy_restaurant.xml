@@ -131,7 +131,7 @@
                 android:layout_marginEnd="24dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="8dp"
-                android:hint="Menu Description"
+                android:hint="Menu Category"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -142,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorAccent"
                     android:drawablePadding="5dp"
-                    android:text="Menu Description"
+                    android:text="Category"
                     android:textColor="@color/colorText" />
             </android.support.design.widget.TextInputLayout>
 
@@ -163,7 +163,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorAccent"
                     android:drawablePadding="5dp"
-                    android:text="Menu Code"
+                    android:text="47DF5DFS5D8D5"
                     android:textColor="@color/colorText"
 
                     />

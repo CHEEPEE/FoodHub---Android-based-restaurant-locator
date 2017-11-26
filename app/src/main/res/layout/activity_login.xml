@@ -86,7 +86,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:visibility="invisible"
-        android:translationZ="3dp"
+        android:translationZ="4dp"
         app:indicatorColor="@color/colorWhite"
         app:indicatorName="BallPulseIndicator"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -98,7 +98,7 @@
         android:layout_height="match_parent"
         android:background="@color/colorAccent"
         android:visibility="invisible"
-        android:translationZ="2dp"
+        android:translationZ="3dp"
         android:id="@+id/prog"
         ></RelativeLayout>
 </android.support.constraint.ConstraintLayout>

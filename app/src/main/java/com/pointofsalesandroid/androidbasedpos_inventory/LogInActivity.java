@@ -37,7 +37,7 @@ public class LogInActivity extends AppCompatActivity {
     Button googleLoginButton;
     DatabaseReference mDatabase;
     FirebaseAuth mAunt;
-    AVLoadingIndicatorView avi;
+
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
@@ -45,6 +45,7 @@ public class LogInActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     // [END declare_auth]
     RelativeLayout prog;
+    AVLoadingIndicatorView avi;
 
     private GoogleSignInClient mGoogleSignInClient;
     @Override

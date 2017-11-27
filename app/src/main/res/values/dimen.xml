@@ -2,7 +2,7 @@
 <resources>
     <dimen name="icon">40dp</dimen>
     <dimen name="photoIcon">70dp</dimen>
-    <dimen name="bannerHeight">250dp</dimen>
+    <dimen name="bannerHeight">200dp</dimen>
     <dimen name="profileICon">100dp</dimen>
     <dimen name="saveButtonHeight">40dp</dimen>
 </resources>

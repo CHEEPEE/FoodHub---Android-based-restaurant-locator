@@ -65,10 +65,12 @@
                     android:backgroundTint="@color/colorAccent"
                     android:drawablePadding="5dp"
                     android:text="Item One"
+                    android:id="@+id/fItemName"
                     android:textColor="@color/colorText" />
             </android.support.design.widget.TextInputLayout>
 
             <Button
+                android:id="@+id/saveToiInventory"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/saveButtonHeight"
                 android:layout_marginBottom="8dp"
@@ -83,8 +85,9 @@
                 android:textColor="@color/colorWhite"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.502"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/container_des" />
+                app:layout_constraintTop_toBottomOf="@+id/dropDownCategory" />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/container_item_price"
@@ -105,7 +108,7 @@
                     android:drawablePadding="5dp"
                     android:text="$ 24.00"
                     android:textColor="@color/colorText"
-
+                    android:id="@+id/fitemPrice"
                     />
             </android.support.design.widget.TextInputLayout>
 
@@ -125,7 +128,7 @@
             </View>
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/container_des"
+                android:id="@+id/container_category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="24dp"
@@ -137,13 +140,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/container_menu_code">
 
-                <android.support.design.widget.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/colorAccent"
-                    android:drawablePadding="5dp"
-                    android:text="Category"
-                    android:textColor="@color/colorText" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -165,12 +161,58 @@
                     android:drawablePadding="5dp"
                     android:text="47DF5DFS5D8D5"
                     android:textColor="@color/colorText"
+                    android:id="@+id/fMenuCode"
 
                     />
             </android.support.design.widget.TextInputLayout>
 
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/dropDownCategory"
+                android:layout_width="150dp"
+                android:textAlignment="center"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="8dp"
+                android:spinnerMode="dialog"
+                android:tooltipText="Category"
+                android:padding="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:background="@drawable/bottomline"
+                app:layout_constraintTop_toBottomOf="@id/container_menu_code">
+
+            </android.support.v7.widget.AppCompatSpinner>
+
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/avi"
+        style="@style/AVLoadingIndicatorView.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="invisible"
+        android:translationZ="4dp"
+        app:indicatorColor="@color/colorWhite"
+        app:indicatorName="BallPulseIndicator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent"
+        android:visibility="invisible"
+        android:translationZ="3dp"
+        android:id="@+id/prog"
+        ></RelativeLayout>
 
 
 </android.support.constraint.ConstraintLayout>

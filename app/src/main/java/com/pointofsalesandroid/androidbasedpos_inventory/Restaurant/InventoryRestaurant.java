@@ -7,11 +7,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.View;
 import android.support.v7.widget.Toolbar;
+import android.widget.GridLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -26,9 +28,12 @@ import com.pointofsalesandroid.androidbasedpos_inventory.LogInActivity;
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
 import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
 import com.pointofsalesandroid.androidbasedpos_inventory.adapter.RecycleItemCategoryAdapter;
+import com.pointofsalesandroid.androidbasedpos_inventory.adapter.RecycleItemProductAdapter;
+import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.AddItemMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.CategoryMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.StoreProfileInformationMap;
 import com.pointofsalesandroid.androidbasedpos_inventory.models.CategoryModel;
+import com.pointofsalesandroid.androidbasedpos_inventory.models.ProductItemGridModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.models.StoreProfileModel;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
@@ -43,9 +48,12 @@ Toolbar inventoryToolbar;
 FirebaseAuth mAuth;
 TextView menuSingOut;
 TextView StoreN,addCategory;
-RecyclerView categoryList;
+RecyclerView categoryList,itemList;
+ArrayList<ProductItemGridModel> arrayItemGrind = new ArrayList<>();
 DatabaseReference mDatabase;
 Context c;
+GridLayoutManager gridLayoutManager;
+RecycleItemProductAdapter recycleItemProductAdapter;
 ArrayList<StoreProfileModel> ArrayStoreProfile = new ArrayList<>();
 ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
     private SlidingRootNav slidingRootNav;
@@ -57,6 +65,17 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        itemList = (RecyclerView) findViewById(R.id.itemListGrid);
+
+        recycleItemProductAdapter = new RecycleItemProductAdapter(c,arrayItemGrind);
+        gridLayoutManager = new GridLayoutManager(c,2);
+
+        itemList.setLayoutManager(gridLayoutManager);
+        itemList.setItemAnimator(new DefaultItemAnimator());
+        itemList.setAdapter(recycleItemProductAdapter);
+
+
         inventoryToolbar = (Toolbar) findViewById(R.id.inventoryToolbar);
         c = InventoryRestaurant.this;
         addProducts.setOnClickListener(new View.OnClickListener() {
@@ -174,6 +193,31 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
 
             }
         });
+
+        mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                arrayItemGrind.clear();
+                for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                    ProductItemGridModel productItemGridModel = new ProductItemGridModel();
+                    AddItemMapModel addItemMapModel = dataSnapshot1.getValue(AddItemMapModel.class);
+                    productItemGridModel.setiName(addItemMapModel.itemName);
+                    productItemGridModel.setItemCategory(addItemMapModel.itemCategory);
+                    productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
+                    productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
+                    arrayItemGrind.add(productItemGridModel);
+                    recycleItemProductAdapter.notifyDataSetChanged();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
 
         //*************set Text And ImageDraw ********************
 

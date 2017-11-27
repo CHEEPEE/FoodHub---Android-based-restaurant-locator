@@ -23,7 +23,7 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/ImageBanner"
+                android:id="@+id/imgBanner"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:tint="@color/colorWhite"
@@ -34,21 +34,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:textSize="20dp"
+                android:textSize="15sp"
                 android:textColor="@color/colorAccent"
                 android:layout_marginTop="8dp"
                 android:text="Item Name"
                 android:id="@+id/label_itemName"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ImageBanner" />
+                app:layout_constraintTop_toBottomOf="@+id/imgBanner" />
 
             <TextView
                 android:id="@+id/label_itemCode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:text="Item Description"
+                android:text="Category"
+                android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/label_itemName" />
 
@@ -56,11 +57,12 @@
                 android:id="@+id/label_item_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="16dp"
                 android:text="$ 24 .00"
+                android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ImageBanner" />
+                app:layout_constraintTop_toBottomOf="@+id/imgBanner" />
 
 
 

@@ -10,6 +10,7 @@ import android.widget.Toast;
 public class Utils {
 public static String storeItemCategory = "storeItemCategory";
 public static String restaurantItems = "restaurantItems";
+public static String testImageUrl ="\"https://firebasestorage.googleapis.com/v0/b/android-based-pos.appspot.com/o/images%2FrestaurantItems%2FBcUYltmzioggwtH0SCUYlKP9XWr2%2FIMG_20171127_222809.jpgandroid.os.ParcelFileDescriptor%24AutoCloseInputStream%40d2eb373%2FIMG_20171127_222809.jpg?alt=media&token=f3133eed-a3fc-4a66-9b11-8a827a23e1f5\"";
 public static void toster(Context context,String Text){
     Toast.makeText(context,Text,Toast.LENGTH_LONG).show();
 

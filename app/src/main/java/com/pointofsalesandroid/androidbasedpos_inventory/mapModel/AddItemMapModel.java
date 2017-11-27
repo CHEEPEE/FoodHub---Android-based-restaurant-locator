@@ -24,6 +24,9 @@ public class AddItemMapModel {
         this.itemBannerURL = bannerUrl;
 
     }
+    public AddItemMapModel(){
+
+    }
     @Exclude
     public Map<String,Object> toMap(){
         HashMap<String,Object> result = new HashMap<>();
@@ -31,7 +34,7 @@ public class AddItemMapModel {
         result.put("itemCode",itemCode);
         result.put("itemPrice",itemPrice);
         result.put("itemCategory",itemCategory);
-        result.put("itemBannerUrl",itemBannerURL);
+        result.put("itemBannerURL",itemBannerURL);
 
         return result;
     }

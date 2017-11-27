@@ -23,7 +23,7 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/ImageBanner"
+                android:id="@+id/imgBanner"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:tint="@color/colorWhite"
@@ -40,7 +40,7 @@
                 android:text="Item Name"
                 android:id="@+id/label_itemName"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ImageBanner" />
+                app:layout_constraintTop_toBottomOf="@+id/imgBanner" />
 
             <TextView
                 android:id="@+id/label_itemCode"
@@ -60,7 +60,7 @@
                 android:layout_marginTop="8dp"
                 android:text="$ 24 .00"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ImageBanner" />
+                app:layout_constraintTop_toBottomOf="@+id/imgBanner" />
 
             <ImageView
                 android:layout_width="@dimen/icon"

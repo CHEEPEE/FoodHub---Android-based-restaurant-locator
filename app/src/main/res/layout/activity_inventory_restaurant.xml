@@ -66,5 +66,6 @@
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_behavior="com.support.android.designlibdemo.ScrollAwareFABBehavior"
         app:srcCompat="@android:drawable/ic_input_add" />
 </android.support.constraint.ConstraintLayout>

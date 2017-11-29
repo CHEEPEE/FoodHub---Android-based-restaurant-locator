@@ -24,7 +24,7 @@ public class RecycleItemProductAdapter extends RecyclerView.Adapter<RecycleItemP
     private ArrayList<ProductItemGridModel> categoryItem = new ArrayList<>();
     private Context context;
     public class MyViewHolder extends RecyclerView.ViewHolder{
-        public ImageView imgBanner;
+        public ImageView banner;
         public TextView itemName,itemCategory,itemPrice;
         public MyViewHolder(View view){
             super(view);
@@ -32,7 +32,7 @@ public class RecycleItemProductAdapter extends RecyclerView.Adapter<RecycleItemP
             itemName = (TextView) view.findViewById(R.id.label_itemName);
             itemCategory = (TextView) view.findViewById(R.id.label_itemCode);
             itemPrice = (TextView) view.findViewById(R.id.label_item_price);
-            imgBanner = (ImageView) view.findViewById(R.id.imgBanner);
+            banner = (ImageView) view.findViewById(R.id.imgBanner);
 
         }
     }
@@ -54,7 +54,7 @@ public class RecycleItemProductAdapter extends RecyclerView.Adapter<RecycleItemP
         holder.itemName.setText(productItemGridModel.getiName());
         holder.itemCategory.setText(productItemGridModel.getItemCategory());
         holder.itemPrice.setText(productItemGridModel.getItemPrice());
-        Glide.with(context).load(Utils.testImageUrl).into(holder.imgBanner);
+        Glide.with(context).load(productItemGridModel.getItemBannerUrl()).into(holder.banner);
 
     }
 

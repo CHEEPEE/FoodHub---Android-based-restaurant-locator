@@ -52,7 +52,9 @@ public class LogInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+       // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.keepSynced(true);
         prog = (RelativeLayout)findViewById(R.id.prog);
         parent = (ConstraintLayout) findViewById(R.id.login_parent_layout);
         parent.setPadding(0, getStatusBarHeight(), 0, 0);

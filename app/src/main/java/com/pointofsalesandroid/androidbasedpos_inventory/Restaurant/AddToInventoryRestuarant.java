@@ -297,6 +297,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 setProgress(false);
+                finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

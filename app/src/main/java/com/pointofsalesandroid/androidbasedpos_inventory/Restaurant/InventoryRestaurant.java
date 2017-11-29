@@ -1,5 +1,6 @@
 package com.pointofsalesandroid.androidbasedpos_inventory.Restaurant;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -13,12 +14,17 @@ import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.View;
 import android.support.v7.widget.Toolbar;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -52,6 +58,7 @@ RecyclerView categoryList,itemList;
 ArrayList<ProductItemGridModel> arrayItemGrind = new ArrayList<>();
 DatabaseReference mDatabase;
 Context c;
+ImageView ic_edit,ic_delete;
 GridLayoutManager gridLayoutManager;
 RecycleItemProductAdapter recycleItemProductAdapter;
 ArrayList<StoreProfileModel> ArrayStoreProfile = new ArrayList<>();
@@ -61,6 +68,11 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory_restaurant);
+        /*ic_edit= (ImageView) findViewById(R.id.ic_edit);
+        ic_delete = (ImageView) findViewById(R.id.ic_delete);*/
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+       // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        mDatabase.keepSynced(true);
         addProducts = (FloatingActionButton) findViewById(R.id.addProducts);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -68,12 +80,6 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
 
         itemList = (RecyclerView) findViewById(R.id.itemListGrid);
 
-        recycleItemProductAdapter = new RecycleItemProductAdapter(c,arrayItemGrind);
-        gridLayoutManager = new GridLayoutManager(c,2);
-
-        itemList.setLayoutManager(gridLayoutManager);
-        itemList.setItemAnimator(new DefaultItemAnimator());
-        itemList.setAdapter(recycleItemProductAdapter);
 
 
         inventoryToolbar = (Toolbar) findViewById(R.id.inventoryToolbar);
@@ -95,6 +101,13 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
                 .withToolbarMenuToggle(inventoryToolbar)
                 .withContentClickableWhenMenuOpened(true)
                 .inject();
+        recycleItemProductAdapter = new RecycleItemProductAdapter(c,arrayItemGrind);
+        gridLayoutManager = new GridLayoutManager(c,2);
+
+        itemList.setLayoutManager(gridLayoutManager);
+        itemList.setItemAnimator(new DefaultItemAnimator());
+        itemList.setAdapter(recycleItemProductAdapter);
+
         //************* side nav initialize **********
         StoreN = (TextView) findViewById(R.id.textStoreName);
         menuSingOut = (TextView) findViewById(R.id.text_signOut);
@@ -111,25 +124,41 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
         categoryList.setAdapter(recycleItemCategoryAdapter);
         recycleItemCategoryAdapter.notifyDataSetChanged();
         //*************** Category Item Listener *************
-        mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                categoryItemList.clear();
-               for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                   CategoryModel categoryModel = new CategoryModel();
-                   CategoryMapModel categoryMapModel =dataSnapshot1.getValue(CategoryMapModel.class);
-                   categoryModel.setKey(categoryMapModel.key);
-                   categoryModel.setCategory(categoryMapModel.category);
-                   categoryItemList.add(categoryModel);
-                   recycleItemCategoryAdapter.notifyDataSetChanged();
-               }
-            }
+        
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+        mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid())
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        CategoryModel categoryModel = new CategoryModel();
+                        CategoryMapModel categoryMapModel =dataSnapshot.getValue(CategoryMapModel.class);
+                        categoryModel.setKey(categoryMapModel.key);
+                        categoryModel.setCategory(categoryMapModel.category);
+                        categoryItemList.add(categoryModel);
+                        recycleItemCategoryAdapter.notifyDataSetChanged();
+                    }
 
-            }
-        });
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
         //************************************************************************8
         menuSingOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,21 +223,63 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
             }
         });
 
-        mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                arrayItemGrind.clear();
-                for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                    ProductItemGridModel productItemGridModel = new ProductItemGridModel();
-                    AddItemMapModel addItemMapModel = dataSnapshot1.getValue(AddItemMapModel.class);
-                    productItemGridModel.setiName(addItemMapModel.itemName);
-                    productItemGridModel.setItemCategory(addItemMapModel.itemCategory);
-                    productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
-                    productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
-                    arrayItemGrind.add(productItemGridModel);
-                    recycleItemProductAdapter.notifyDataSetChanged();
 
-                }
+
+
+
+        //*************set Text And ImageDraw ********************
+
+
+        //************* Imageview SetOnclick *********************
+
+/*        ic_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               *//* final Dialog dialog = new Dialog(c);
+
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setCancelable(false);
+                dialog.setContentView(R.layout.resturant_item_grid);
+                dialog.show();*//*
+            }
+        });
+
+        ic_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });*/
+    }
+
+    private void setitemListCategory(String category){
+        categoryItemList.clear();
+        mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).orderByChild("itemCategory").equalTo(category).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                ProductItemGridModel productItemGridModel = new ProductItemGridModel();
+                AddItemMapModel addItemMapModel = dataSnapshot.getValue(AddItemMapModel.class);
+                productItemGridModel.setiName(addItemMapModel.itemName);
+                productItemGridModel.setItemCategory(addItemMapModel.itemCategory);
+                productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
+                productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
+                arrayItemGrind.add(productItemGridModel);
+                recycleItemProductAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -216,13 +287,6 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
 
             }
         });
-
-
-
-        //*************set Text And ImageDraw ********************
-
-
-
     }
 
 }

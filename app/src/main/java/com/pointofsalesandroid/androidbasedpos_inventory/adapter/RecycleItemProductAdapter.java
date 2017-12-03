@@ -45,6 +45,7 @@ public class RecycleItemProductAdapter extends RecyclerView.Adapter<RecycleItemP
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.resturant_item_grid,parent,false);
+
         return new MyViewHolder(itemView);
     }
 
@@ -55,11 +56,24 @@ public class RecycleItemProductAdapter extends RecyclerView.Adapter<RecycleItemP
         holder.itemCategory.setText(productItemGridModel.getItemCategory());
         holder.itemPrice.setText(productItemGridModel.getItemPrice());
         Glide.with(context).load(productItemGridModel.getItemBannerUrl()).into(holder.banner);
+    }
 
+
+
+    public interface OnItemClickLitener {
+        void onItemClick(View view, int position);
+    }
+
+    private OnItemClickLitener mOnItemClickLitener;
+
+    public void setOnItemClickListener(OnItemClickLitener mOnItemClickLitener) {
+        this.mOnItemClickLitener = mOnItemClickLitener;
     }
 
     @Override
     public int getItemCount() {
         return categoryItem.size();
     }
+
+
 }

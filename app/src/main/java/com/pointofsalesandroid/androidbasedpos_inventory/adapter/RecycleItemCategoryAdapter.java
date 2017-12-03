@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
+import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
 import com.pointofsalesandroid.androidbasedpos_inventory.models.CategoryModel;
 
 import java.util.ArrayList;
@@ -42,8 +43,14 @@ public class RecycleItemCategoryAdapter extends RecyclerView.Adapter<RecycleItem
     }
 
     @Override
-    public void onBindViewHolder(RecycleItemCategoryAdapter.MyViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecycleItemCategoryAdapter.MyViewHolder holder, final int position) {
         holder.text_category.setText(categoryItem.get(position).getCategory());
+        holder.text_category.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnItemClickLitener. onItemClick(holder.itemView,position);
+            }
+        });
     }
 
     @Override
@@ -54,5 +61,14 @@ public class RecycleItemCategoryAdapter extends RecyclerView.Adapter<RecycleItem
     @Override
     public long getItemId(int position) {
         return super.getItemId(position);
+    }
+    public interface OnItemClickLitener {
+        void onItemClick(View view, int position);
+    }
+
+    private RecycleItemProductAdapter.OnItemClickLitener mOnItemClickLitener;
+
+    public void setOnItemClickListener(RecycleItemProductAdapter.OnItemClickLitener mOnItemClickLitener) {
+        this.mOnItemClickLitener = mOnItemClickLitener;
     }
 }

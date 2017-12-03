@@ -59,6 +59,7 @@ ArrayList<ProductItemGridModel> arrayItemGrind = new ArrayList<>();
 DatabaseReference mDatabase;
 Context c;
 ImageView ic_edit,ic_delete;
+String itemCategoryString = "itemCategory";
 GridLayoutManager gridLayoutManager;
 RecycleItemProductAdapter recycleItemProductAdapter;
 ArrayList<StoreProfileModel> ArrayStoreProfile = new ArrayList<>();
@@ -115,6 +116,8 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
 
 
 
+
+
         //************** Recycler ******************
         final RecycleItemCategoryAdapter recycleItemCategoryAdapter = new RecycleItemCategoryAdapter(InventoryRestaurant.this,categoryItemList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(InventoryRestaurant.this);
@@ -123,8 +126,14 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
         categoryList.setLayoutManager(layoutManager);
         categoryList.setAdapter(recycleItemCategoryAdapter);
         recycleItemCategoryAdapter.notifyDataSetChanged();
-        //*************** Category Item Listener *************
-        
+
+
+        //************** Category Filter Off ************
+        CategoryModel catMode = new CategoryModel();
+        catMode.setCategory("All");
+        catMode.setKey("null");
+        categoryItemList.add(catMode);
+        //***********************************************
 
         mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid())
                 .addChildEventListener(new ChildEventListener() {
@@ -158,6 +167,18 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
 
                     }
                 });
+
+        //*************** Category Item Listener *************
+
+
+        recycleItemCategoryAdapter.setOnItemClickListener(new RecycleItemProductAdapter.OnItemClickLitener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                setitemListCategory(itemCategoryString,categoryItemList.get(position).getCategory());
+            }
+        });
+
+        setitemListCategoryAll();
 
         //************************************************************************8
         menuSingOut.setOnClickListener(new View.OnClickListener() {
@@ -232,29 +253,16 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
 
         //************* Imageview SetOnclick *********************
 
-/*        ic_edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               *//* final Dialog dialog = new Dialog(c);
 
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setCancelable(false);
-                dialog.setContentView(R.layout.resturant_item_grid);
-                dialog.show();*//*
-            }
-        });
-
-        ic_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });*/
     }
 
-    private void setitemListCategory(String category){
-        categoryItemList.clear();
-        mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).orderByChild("itemCategory").equalTo(category).addChildEventListener(new ChildEventListener() {
+    private void setitemListCategory(String child,String category){
+        arrayItemGrind.clear();
+        recycleItemProductAdapter.notifyDataSetChanged();
+        if (category.equals("All")){
+            setitemListCategoryAll();
+        }
+        mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).orderByChild(child).equalTo(category).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 ProductItemGridModel productItemGridModel = new ProductItemGridModel();
@@ -267,6 +275,44 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
                 recycleItemProductAdapter.notifyDataSetChanged();
             }
 
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //*****************8 set ItemList Categroy  ***************************8
+
+
+    }
+    private void setitemListCategoryAll(){
+        mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                ProductItemGridModel productItemGridModel = new ProductItemGridModel();
+                AddItemMapModel addItemMapModel = dataSnapshot.getValue(AddItemMapModel.class);
+                productItemGridModel.setiName(addItemMapModel.itemName);
+                productItemGridModel.setItemCategory(addItemMapModel.itemCategory);
+                productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
+                productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
+                arrayItemGrind.add(productItemGridModel);
+                recycleItemProductAdapter.notifyDataSetChanged();
+            }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 

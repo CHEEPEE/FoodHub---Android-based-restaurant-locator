@@ -53,6 +53,7 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
        // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.keepSynced(true);
         prog = (RelativeLayout)findViewById(R.id.prog);
@@ -184,7 +185,6 @@ public class LogInActivity extends AppCompatActivity {
                        Intent i =  new Intent(LogInActivity.this,InventoryRestaurant.class);
                        startActivity(i);
                        finish();
-
                     }
 
                 }

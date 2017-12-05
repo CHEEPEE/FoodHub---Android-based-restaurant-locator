@@ -33,7 +33,8 @@
         <activity
             android:name=".RetailStore.AddToInvetoryRetailStore"
             android:theme="@style/AppThemeNoActionBar" />
-        <activity android:name=".RetailStore.InventoryRetailStore"></activity>
+        <activity android:name=".RetailStore.InventoryRetailStore" />
+        <activity android:name=".Restaurant.UpdateProductActiivty"></activity>
     </application>
 
 </manifest>

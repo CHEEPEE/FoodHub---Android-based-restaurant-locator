@@ -1,6 +1,7 @@
 package com.pointofsalesandroid.androidbasedpos_inventory.adapter;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.FirebaseDatabase;
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
+import com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.InventoryRestaurant;
 import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
 import com.pointofsalesandroid.androidbasedpos_inventory.models.ProductItemGridModel;
 
@@ -24,11 +27,12 @@ public class RecycleItemProductAdapter extends RecyclerView.Adapter<RecycleItemP
     private ArrayList<ProductItemGridModel> categoryItem = new ArrayList<>();
     private Context context;
     public class MyViewHolder extends RecyclerView.ViewHolder{
-        public ImageView banner;
+        public ImageView banner,ic_delete,ic_edit;
         public TextView itemName,itemCategory,itemPrice;
         public MyViewHolder(View view){
             super(view);
-
+            ic_delete = (ImageView) view.findViewById(R.id.ic_delete);
+            ic_edit = (ImageView)view.findViewById(R.id.ic_edit);
             itemName = (TextView) view.findViewById(R.id.label_itemName);
             itemCategory = (TextView) view.findViewById(R.id.label_itemCode);
             itemPrice = (TextView) view.findViewById(R.id.label_item_price);
@@ -50,18 +54,32 @@ public class RecycleItemProductAdapter extends RecyclerView.Adapter<RecycleItemP
     }
 
     @Override
-    public void onBindViewHolder(RecycleItemProductAdapter.MyViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecycleItemProductAdapter.MyViewHolder holder, final int position) {
         ProductItemGridModel productItemGridModel = categoryItem.get(position);
         holder.itemName.setText(productItemGridModel.getiName());
         holder.itemCategory.setText(productItemGridModel.getItemCategory());
         holder.itemPrice.setText(productItemGridModel.getItemPrice());
         Glide.with(context).load(productItemGridModel.getItemBannerUrl()).into(holder.banner);
+        holder.ic_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnItemClickLitener.onItemClick(holder.itemView,position,"edit");
+
+            }
+        });
+        holder.ic_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnItemClickLitener.onItemClick(holder.itemView,position,"delete");
+            }
+        });
     }
 
 
 
     public interface OnItemClickLitener {
-        void onItemClick(View view, int position);
+        void onItemClick(View view, int position,String text);
+
     }
 
     private OnItemClickLitener mOnItemClickLitener;
@@ -74,6 +92,7 @@ public class RecycleItemProductAdapter extends RecyclerView.Adapter<RecycleItemP
     public int getItemCount() {
         return categoryItem.size();
     }
+
 
 
 }

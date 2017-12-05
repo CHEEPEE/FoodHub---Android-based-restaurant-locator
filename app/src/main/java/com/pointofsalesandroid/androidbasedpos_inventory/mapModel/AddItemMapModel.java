@@ -15,13 +15,15 @@ public class AddItemMapModel {
     public String itemPrice;
     public String itemCategory;
     public String itemBannerURL;
+    public String itemKey;
 
-    public AddItemMapModel (String name,String code,String price,String category,String bannerUrl){
+    public AddItemMapModel (String name,String code,String price,String category,String bannerUrl,String key){
         this.itemName = name;
         this.itemCode = code;
         this.itemPrice = price;
         this.itemCategory = category;
         this.itemBannerURL = bannerUrl;
+        this.itemKey = key;
 
     }
     public AddItemMapModel(){
@@ -35,6 +37,8 @@ public class AddItemMapModel {
         result.put("itemPrice",itemPrice);
         result.put("itemCategory",itemCategory);
         result.put("itemBannerURL",itemBannerURL);
+        result.put("itemKey",itemKey);
+
 
         return result;
     }

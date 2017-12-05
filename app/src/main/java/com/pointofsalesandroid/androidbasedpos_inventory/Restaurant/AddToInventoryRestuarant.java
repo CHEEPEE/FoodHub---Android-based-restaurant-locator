@@ -141,8 +141,6 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
     //********************* file Search *****************
 
 
-
-
     //**************** validation ************************
     private boolean validateForm(EditText itemName,EditText menuCode,EditText ItemPrice) {
         boolean valid = true;
@@ -187,11 +185,9 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
         // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
         // browser.
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-
         // Filter to only show results that can be "opened", such as a
         // file (as opposed to a list of contacts or timezones)
         //intent.addCategory(Intent.CATEGORY_OPENABLE);
-
         // Filter to show only images, using the image MIME data imageType.
         // If one wanted to search for ogg vorbis files, the imageType would be "audio/ogg".
         // To search for all documents available via installed storage providers,
@@ -232,7 +228,8 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
         // Picasso.with(CreatePostActivity.this).load(uri).resize(300,600).into(imageToUpload);
         bannerUri = uri;
         Glide.with(c).load(uri).into(imageView);
-        imageView.setColorFilter(null);
+        imageView.setColorFilter(getResources().getColor(R.color.transparent));
+        imageView.setPadding(0,0,0,0);
 
 
     }
@@ -289,7 +286,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
                           String itemCat,String bannerURL){
         String UserId = mAuth.getUid();
         String key = mDatabase.push().getKey();
-        AddItemMapModel addItemMapModel = new AddItemMapModel(itemName,code,price,itemCat,bannerURL);
+        AddItemMapModel addItemMapModel = new AddItemMapModel(itemName,code,price,itemCat,bannerURL,key);
         Map<String,Object> postValue = addItemMapModel.toMap();
         Map<String,Object> childUpdates = new HashMap<>();
         childUpdates.put(key,postValue);
@@ -297,6 +294,8 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 setProgress(false);
+                Intent i = new Intent(AddToInventoryRestuarant.this,InventoryRestaurant.class);
+                startActivity(i);
                 finish();
             }
         }).addOnFailureListener(new OnFailureListener() {

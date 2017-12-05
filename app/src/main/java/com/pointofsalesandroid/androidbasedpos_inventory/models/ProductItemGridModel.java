@@ -9,6 +9,7 @@ public class ProductItemGridModel {
     private String itemCategory;
     private String itemPrice;
     private String itemBannerUrl;
+    private String itemKey;
 
     public String getiName(){
         return iName;
@@ -22,6 +23,9 @@ public class ProductItemGridModel {
     public String getItemBannerUrl(){
         return itemBannerUrl;
     }
+    public String getItemKey(){
+        return itemKey;
+    }
     public void setiName(String name){
         this.iName = name;
     }
@@ -33,6 +37,9 @@ public class ProductItemGridModel {
     }
     public void setItemPrice(String price){
         this.itemPrice = price;
+    }
+    public void setItemKey(String key){
+        this.itemKey = key;
     }
 
 }

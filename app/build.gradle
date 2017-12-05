@@ -11,7 +11,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
-        debug{
+        debug {
             debuggable true
         }
 
@@ -53,6 +53,7 @@ dependencies {
     //material Dialog
     compile 'com.afollestad.material-dialogs:core:0.9.6.0'
 }
+
 
 
 

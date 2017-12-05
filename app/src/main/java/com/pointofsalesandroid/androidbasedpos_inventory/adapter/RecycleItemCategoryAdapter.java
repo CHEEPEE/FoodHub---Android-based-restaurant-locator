@@ -48,7 +48,7 @@ public class RecycleItemCategoryAdapter extends RecyclerView.Adapter<RecycleItem
         holder.text_category.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnItemClickLitener. onItemClick(holder.itemView,position);
+                mOnItemClickLitener.onItemClick(holder.itemView,position);
             }
         });
     }
@@ -62,13 +62,15 @@ public class RecycleItemCategoryAdapter extends RecyclerView.Adapter<RecycleItem
     public long getItemId(int position) {
         return super.getItemId(position);
     }
+
     public interface OnItemClickLitener {
         void onItemClick(View view, int position);
+
     }
 
-    private RecycleItemProductAdapter.OnItemClickLitener mOnItemClickLitener;
+    private OnItemClickLitener mOnItemClickLitener;
 
-    public void setOnItemClickListener(RecycleItemProductAdapter.OnItemClickLitener mOnItemClickLitener) {
+    public void setOnItemClickListener(OnItemClickLitener mOnItemClickLitener) {
         this.mOnItemClickLitener = mOnItemClickLitener;
     }
 }

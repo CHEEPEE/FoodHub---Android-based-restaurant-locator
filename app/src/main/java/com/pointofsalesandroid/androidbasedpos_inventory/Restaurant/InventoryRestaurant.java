@@ -4,7 +4,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -30,6 +32,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.pointofsalesandroid.androidbasedpos_inventory.LogInActivity;
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
 import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
@@ -59,18 +62,18 @@ ArrayList<ProductItemGridModel> arrayItemGrind = new ArrayList<>();
 DatabaseReference mDatabase;
 Context c;
 ImageView ic_edit,ic_delete;
+public ConstraintLayout constraintLayout;
 String itemCategoryString = "itemCategory";
 GridLayoutManager gridLayoutManager;
 RecycleItemProductAdapter recycleItemProductAdapter;
+int itemPos;
 ArrayList<StoreProfileModel> ArrayStoreProfile = new ArrayList<>();
 ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
-    private SlidingRootNav slidingRootNav;
+private SlidingRootNav slidingRootNav;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory_restaurant);
-        /*ic_edit= (ImageView) findViewById(R.id.ic_edit);
-        ic_delete = (ImageView) findViewById(R.id.ic_delete);*/
         mDatabase = FirebaseDatabase.getInstance().getReference();
        // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mDatabase.keepSynced(true);
@@ -78,6 +81,7 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        constraintLayout = (ConstraintLayout) findViewById(R.id.constrainLayout);
 
         itemList = (RecyclerView) findViewById(R.id.itemListGrid);
 
@@ -90,6 +94,7 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
             public void onClick(View v) {
                 Intent i  = new Intent(InventoryRestaurant.this,AddToInventoryRestuarant.class);
                 startActivity(i);
+                finish();
             }
         });
         slidingRootNav = new SlidingRootNavBuilder(this)
@@ -170,13 +175,13 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
 
         //*************** Category Item Listener *************
 
-
-        recycleItemCategoryAdapter.setOnItemClickListener(new RecycleItemProductAdapter.OnItemClickLitener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                setitemListCategory(itemCategoryString,categoryItemList.get(position).getCategory());
-            }
-        });
+      recycleItemCategoryAdapter.setOnItemClickListener(new RecycleItemCategoryAdapter.OnItemClickLitener() {
+          @Override
+          public void onItemClick(View view, int position) {
+              setitemListCategory(itemCategoryString,categoryItemList.get(position).getCategory());
+              slidingRootNav.closeMenu();
+          }
+      });
 
         setitemListCategoryAll();
 
@@ -244,12 +249,26 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
             }
         });
 
+        recycleItemProductAdapter.setOnItemClickListener(new RecycleItemProductAdapter.OnItemClickLitener() {
+            @Override
+            public void onItemClick(View view, int position, String Text) {
+               if (Text.equals("edit")){
+                   editProductItem();
+
+               }
+               if (Text.equals("delete")){
+                   Snackbar.make(constraintLayout,"Are You Sure you Want to Delete This Item?",Snackbar.LENGTH_SHORT)
+                           .setAction("Proceed",new deleteProductItem()).show();
+                   itemPos = position;
+               }
+            }
+        });
+
 
 
 
 
         //*************set Text And ImageDraw ********************
-
 
         //************* Imageview SetOnclick *********************
 
@@ -271,6 +290,7 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
                 productItemGridModel.setItemCategory(addItemMapModel.itemCategory);
                 productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
                 productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
+                productItemGridModel.setItemKey(addItemMapModel.itemKey);
                 arrayItemGrind.add(productItemGridModel);
                 recycleItemProductAdapter.notifyDataSetChanged();
             }
@@ -310,6 +330,7 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
                 productItemGridModel.setItemCategory(addItemMapModel.itemCategory);
                 productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
                 productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
+                productItemGridModel.setItemKey(addItemMapModel.itemKey);
                 arrayItemGrind.add(productItemGridModel);
                 recycleItemProductAdapter.notifyDataSetChanged();
             }
@@ -334,5 +355,28 @@ ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
             }
         });
     }
+
+    public class deleteProductItem implements View.OnClickListener{
+        @Override
+        public void onClick(View v) {
+
+            Utils.toster(c,"Delete This Toast");
+
+            Utils.toster(c,arrayItemGrind.get(itemPos).getItemKey());
+            FirebaseStorage.getInstance().getReferenceFromUrl(arrayItemGrind.get(itemPos).getItemBannerUrl()).delete();
+            FirebaseDatabase.getInstance().getReference()
+                    .child(Utils.restaurantItems).child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .child(arrayItemGrind.get(itemPos).getItemKey()).removeValue();
+            arrayItemGrind.remove(itemPos);
+            recycleItemProductAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+    private void editProductItem(){
+        Utils.toster(c,"Edit this Product Item");
+    }
+
+
 
 }

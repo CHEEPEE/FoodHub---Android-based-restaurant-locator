@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
@@ -27,7 +28,6 @@ public class RecycleItemCategoryAdapter extends RecyclerView.Adapter<RecycleItem
         public MyViewHolder(View view){
             super(view);
                text_category = (TextView) view.findViewById(R.id.itemCategory);
-
         }
     }
 
@@ -51,6 +51,14 @@ public class RecycleItemCategoryAdapter extends RecyclerView.Adapter<RecycleItem
                 mOnItemClickLitener.onItemClick(holder.itemView,position);
             }
         });
+        holder.text_category.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                monItemLongClickListener.onItemLongClick(holder.itemView,position);
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -67,10 +75,19 @@ public class RecycleItemCategoryAdapter extends RecyclerView.Adapter<RecycleItem
         void onItemClick(View view, int position);
 
     }
+    public interface OnItemLongClickListener{
+        void onItemLongClick(View view, int posistion);
+    }
 
     private OnItemClickLitener mOnItemClickLitener;
 
     public void setOnItemClickListener(OnItemClickLitener mOnItemClickLitener) {
         this.mOnItemClickLitener = mOnItemClickLitener;
+    }
+
+    private OnItemLongClickListener monItemLongClickListener;
+
+    public void setonItemLongClickListener(OnItemLongClickListener monItemLongClickListener){
+        this.monItemLongClickListener = monItemLongClickListener;
     }
 }

@@ -10,8 +10,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/storeIcon"
-        android:layout_width="@dimen/photoIcon"
-        android:layout_height="@dimen/photoIcon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="24dp"
         android:src="@drawable/sample"

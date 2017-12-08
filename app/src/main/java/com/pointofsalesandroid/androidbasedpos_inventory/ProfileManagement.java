@@ -58,6 +58,7 @@ public class ProfileManagement extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_management);
         submitInformation = (Button) findViewById(R.id.submitInformation);
+
         mAuth = FirebaseAuth.getInstance();
         progBlocker = (RelativeLayout) findViewById(R.id.prog);
         savingProgress = (AVLoadingIndicatorView)findViewById(R.id.avi);
@@ -68,6 +69,7 @@ public class ProfileManagement extends AppCompatActivity {
         StoreBanner = (ImageView) findViewById(R.id.storeBanner);
         StoreProfileImage = (ImageView)findViewById(R.id.store_profile_icon);
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.keepSynced(true);
         mStorageRef = FirebaseStorage.getInstance().getReference();
         submitInformation.setOnClickListener(new View.OnClickListener() {
             @Override

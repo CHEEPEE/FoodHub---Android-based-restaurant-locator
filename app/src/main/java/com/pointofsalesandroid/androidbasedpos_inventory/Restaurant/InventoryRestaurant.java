@@ -1,8 +1,10 @@
 package com.pointofsalesandroid.androidbasedpos_inventory.Restaurant;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -25,6 +27,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -51,6 +54,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class InventoryRestaurant extends AppCompatActivity {
 FloatingActionButton addProducts;
 Toolbar inventoryToolbar;
@@ -62,6 +67,7 @@ ArrayList<ProductItemGridModel> arrayItemGrind = new ArrayList<>();
 DatabaseReference mDatabase;
 Context c;
 ImageView ic_edit,ic_delete;
+CircleImageView storeIcon;
 public ConstraintLayout constraintLayout;
 String itemCategoryString = "itemCategory";
 GridLayoutManager gridLayoutManager;
@@ -69,6 +75,7 @@ RecycleItemProductAdapter recycleItemProductAdapter;
 int itemPos;
 ArrayList<StoreProfileModel> ArrayStoreProfile = new ArrayList<>();
 ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
+RecycleItemCategoryAdapter recycleItemCategoryAdapter;
 private SlidingRootNav slidingRootNav;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +116,7 @@ private SlidingRootNav slidingRootNav;
                 .inject();
         recycleItemProductAdapter = new RecycleItemProductAdapter(c,arrayItemGrind);
         gridLayoutManager = new GridLayoutManager(c,2);
+        storeIcon = (CircleImageView) findViewById(R.id.storeIcon);
 
         itemList.setLayoutManager(gridLayoutManager);
         itemList.setItemAnimator(new DefaultItemAnimator());
@@ -124,7 +132,7 @@ private SlidingRootNav slidingRootNav;
 
 
         //************** Recycler ******************
-        final RecycleItemCategoryAdapter recycleItemCategoryAdapter = new RecycleItemCategoryAdapter(InventoryRestaurant.this,categoryItemList);
+        recycleItemCategoryAdapter = new RecycleItemCategoryAdapter(InventoryRestaurant.this,categoryItemList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(InventoryRestaurant.this);
         categoryList = (RecyclerView)findViewById(R.id.categoryList);
         categoryList.setItemAnimator(new DefaultItemAnimator());
@@ -140,38 +148,7 @@ private SlidingRootNav slidingRootNav;
         categoryItemList.add(catMode);
         //***********************************************
 
-        mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid())
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        CategoryModel categoryModel = new CategoryModel();
-                        CategoryMapModel categoryMapModel =dataSnapshot.getValue(CategoryMapModel.class);
-                        categoryModel.setKey(categoryMapModel.key);
-                        categoryModel.setCategory(categoryMapModel.category);
-                        categoryItemList.add(categoryModel);
-                        recycleItemCategoryAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
+        categoryList();
 
         //*************** Category Item Listener *************
 
@@ -180,6 +157,15 @@ private SlidingRootNav slidingRootNav;
           public void onItemClick(View view, int position) {
               setitemListCategory(itemCategoryString,categoryItemList.get(position).getCategory());
               slidingRootNav.closeMenu();
+          }
+      });
+
+      recycleItemCategoryAdapter.setonItemLongClickListener(new RecycleItemCategoryAdapter.OnItemLongClickListener() {
+          @Override
+          public void onItemLongClick(View view, int posistion) {
+             showDialog(categoryItemList.get(posistion).getCategory(),categoryItemList.get(posistion).getKey());
+
+
           }
       });
 
@@ -240,6 +226,7 @@ private SlidingRootNav slidingRootNav;
                 storeProfileModel.setStoreContact(storeProfileInformationMap.storeContact);
                 ArrayStoreProfile.add(storeProfileModel);
                 StoreN.setText(ArrayStoreProfile.get(0).getStoreName());
+                Glide.with(c).load(ArrayStoreProfile.get(0).getStoreProfileUrl()).into(storeIcon);
 
             }
 
@@ -321,6 +308,7 @@ private SlidingRootNav slidingRootNav;
 
     }
     private void setitemListCategoryAll(){
+        arrayItemGrind.clear();
         mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -377,6 +365,66 @@ private SlidingRootNav slidingRootNav;
         Utils.toster(c,"Edit this Product Item");
     }
 
+    //*************** custom Dialog  ***************
+    public void showDialog(String msg, final String key){
+        final Dialog dialog = new Dialog(InventoryRestaurant.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.dialog_edit_delete_category);
+        EditText category_field = (EditText) dialog.findViewById(R.id.category_field);
+        Button save = (Button) dialog.findViewById(R.id.btn_save);
+        Button delete = (Button) dialog.findViewById(R.id.btn_delete);
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).child(key).removeValue();
+                recycleItemCategoryAdapter.notifyDataSetChanged();
+                setitemListCategoryAll();
+                dialog.dismiss();
+                categoryList();
 
+            }
+        });
+
+        category_field.setText(msg);
+
+        dialog.show();
+
+    }
+    private void categoryList(){
+        categoryItemList.clear();
+        mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid())
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        CategoryModel categoryModel = new CategoryModel();
+                        CategoryMapModel categoryMapModel =dataSnapshot.getValue(CategoryMapModel.class);
+                        categoryModel.setKey(categoryMapModel.key);
+                        categoryModel.setCategory(categoryMapModel.category);
+                        categoryItemList.add(categoryModel);
+                        recycleItemCategoryAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
 
 }

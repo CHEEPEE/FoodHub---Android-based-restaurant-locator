@@ -127,6 +127,7 @@ public class LogInActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             final FirebaseUser user = mAuth.getCurrentUser();
+                            mDatabase.keepSynced(true);
                             /*Intent i  = new Intent(LogInActivity.this,ProfileManagement.class);
                             startActivity(i);*/
                             mDatabase.child("storeProfiles").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -136,6 +137,9 @@ public class LogInActivity extends AppCompatActivity {
                                         Intent i = new Intent(LogInActivity.this,ProfileManagement.class);
                                         startActivity(i);
                                         finish();
+                                    }else {
+                                        Intent i =  new Intent(LogInActivity.this,InventoryRestaurant.class);
+                                        startActivity(i);
                                     }
                                     finish();
                                 }
@@ -172,7 +176,7 @@ public class LogInActivity extends AppCompatActivity {
         super.onStart();
         if (mAuth.getCurrentUser()!=null){
             final FirebaseUser user = mAuth.getCurrentUser();
-
+            mDatabase.keepSynced(true);
             setProgress(true);
             mDatabase.child("storeProfiles").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

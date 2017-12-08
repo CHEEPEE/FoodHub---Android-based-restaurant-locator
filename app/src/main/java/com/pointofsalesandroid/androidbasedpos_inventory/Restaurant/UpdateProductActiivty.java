@@ -12,6 +12,5 @@ public class UpdateProductActiivty extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_product_actiivty);
 
-
     }
 }

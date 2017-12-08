@@ -7,8 +7,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,6 +40,7 @@ import com.pointofsalesandroid.androidbasedpos_inventory.ProfileManagement;
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
 import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.AddItemMapModel;
+import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.CategoryMapModel;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
@@ -50,6 +55,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
     DatabaseReference mDatabase;
     FirebaseAuth mAuth;
     ArrayList<String> categoryItemList = new ArrayList<>();
+    ArrayList<String> categoryItemListKey = new ArrayList<>();
     ArrayAdapter<String> adapter;
     EditText itemName,itemCode,itemPrice;
     Spinner itemCategory;
@@ -61,13 +67,14 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
     RelativeLayout prog;
     AVLoadingIndicatorView avi;
     StorageReference mStorageReference;
+    FloatingActionButton addCategory;
     private static final int READ_REQUEST_CODE = 42;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_to_inventroy_restaurant);
 
-        //************ start initialaze ****************
+        //*********** start initialaze ****************
         avi = (AVLoadingIndicatorView) findViewById(R.id.avi);
         prog = (RelativeLayout)findViewById(R.id.prog);
         mStorageReference = FirebaseStorage.getInstance().getReference();
@@ -80,6 +87,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
         itemName = (EditText)findViewById(R.id.fItemName);
         itemCode = (EditText)findViewById(R.id.fMenuCode);
         itemPrice = (EditText) findViewById(R.id.fitemPrice);
+        addCategory = (FloatingActionButton) findViewById(R.id.add_category);
 
         spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -96,6 +104,34 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
             }
         });
 
+        addCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(c)
+                        .content("Add Category")
+                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                Utils.toster(c, dialog.getInputEditText().getText().toString());
+                                String key = mDatabase.push().getKey();
+                                CategoryMapModel categoryMapModel = new CategoryMapModel(key,dialog.getInputEditText().getText().toString());
+                                Map<String,Object> categoryVal = categoryMapModel.toMap();
+                                Map<String,Object> childUpdate = new HashMap<>();
+                                childUpdate.put(key,categoryVal);
+                                mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).updateChildren(childUpdate);
+                            }
+                        })
+                        .input("Category Name", "", new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog dialog, CharSequence input) {
+                                // Do something
+
+                            }
+                        }).show();
+            }
+        });
+
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categoryItemList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
@@ -105,8 +141,9 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
                 categoryItemList.clear();
                 categoryItemList.add("Choose Category");
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
                     categoryItemList.add(dataSnapshot1.child("category").getValue(String.class).toString());
-                    System.out.println(dataSnapshot1.getValue().toString());
+                    categoryItemListKey.add(dataSnapshot1.child("key").getValue(String.class).toString());
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -223,7 +260,15 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
 
     }
 
-    private void setImage(Uri uri,ImageView imageView){
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(AddToInventoryRestuarant.this,InventoryRestaurant.class);
+        startActivity(i);
+
+    }
+
+    private void setImage(Uri uri, ImageView imageView){
         // floatClearImage.setVisibility(View.VISIBLE);
         // Picasso.with(CreatePostActivity.this).load(uri).resize(300,600).into(imageToUpload);
         bannerUri = uri;

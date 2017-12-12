@@ -10,6 +10,11 @@ public class ProductItemGridModel {
     private String itemPrice;
     private String itemBannerUrl;
     private String itemKey;
+    private String itemCode;
+
+    public String getItemCode(){
+        return itemCode;
+    }
 
     public String getiName(){
         return iName;
@@ -40,6 +45,9 @@ public class ProductItemGridModel {
     }
     public void setItemKey(String key){
         this.itemKey = key;
+    }
+    public void setItemCode(String code){
+        this.itemCode = code;
     }
 
 }

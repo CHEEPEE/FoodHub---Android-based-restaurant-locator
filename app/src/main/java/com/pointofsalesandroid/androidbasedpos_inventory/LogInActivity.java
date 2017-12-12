@@ -52,8 +52,6 @@ public class LogInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-       // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.keepSynced(true);
         prog = (RelativeLayout)findViewById(R.id.prog);
@@ -82,6 +80,7 @@ public class LogInActivity extends AppCompatActivity {
     }
 
     // ************************************** Facebook Log In  ***************************************************
+
 
 
 
@@ -133,12 +132,12 @@ public class LogInActivity extends AppCompatActivity {
                             mDatabase.child("storeProfiles").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.getValue() == null){
-                                        Intent i = new Intent(LogInActivity.this,ProfileManagement.class);
+                                    if (dataSnapshot.getValue() == null) {
+                                        Intent i = new Intent(LogInActivity.this, ProfileManagement.class);
                                         startActivity(i);
                                         finish();
-                                    }else {
-                                        Intent i =  new Intent(LogInActivity.this,InventoryRestaurant.class);
+                                    } else {
+                                        Intent i = new Intent(LogInActivity.this, InventoryRestaurant.class);
                                         startActivity(i);
                                     }
                                     finish();
@@ -149,28 +148,19 @@ public class LogInActivity extends AppCompatActivity {
 
                                 }
                             });
-
-                           /* if (mDatabase.child(user.getUid())== null){
-                                Intent i = new Intent(LogInActivity.this,ProfileManagement.class);
-                                startActivity(i);
-                            }else {
-
-                            }*/
+                            mDatabase.keepSynced(true);
 
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(LogInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                           setProgress(false);
+                            setProgress(false);
                         }
 
                     }
                 });
     }
-
-
-
     @Override
     public void onStart() {
         super.onStart();
@@ -185,27 +175,18 @@ public class LogInActivity extends AppCompatActivity {
                         Intent i = new Intent(LogInActivity.this,ProfileManagement.class);
                         startActivity(i);
                     }else {
-                       Utils.toster(LogInActivity.this,"Success getting Profile Credencials");
                        Intent i =  new Intent(LogInActivity.this,InventoryRestaurant.class);
                        startActivity(i);
                        finish();
                     }
-
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     setProgress(false);
                 }
             });
         }
-
     }
-
-
-
-
-
 
     // ************************************** Utilities *****************************************************
 

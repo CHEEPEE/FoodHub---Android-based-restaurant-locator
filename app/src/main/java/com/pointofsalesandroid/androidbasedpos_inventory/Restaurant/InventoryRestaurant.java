@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -82,14 +83,12 @@ private SlidingRootNav slidingRootNav;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory_restaurant);
         mDatabase = FirebaseDatabase.getInstance().getReference();
-       // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mDatabase.keepSynced(true);
         addProducts = (FloatingActionButton) findViewById(R.id.addProducts);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         constraintLayout = (ConstraintLayout) findViewById(R.id.constrainLayout);
-
         itemList = (RecyclerView) findViewById(R.id.itemListGrid);
 
 
@@ -114,8 +113,17 @@ private SlidingRootNav slidingRootNav;
                 .withToolbarMenuToggle(inventoryToolbar)
                 .withContentClickableWhenMenuOpened(true)
                 .inject();
+
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            //code for portrait mode
+            gridLayoutManager = new GridLayoutManager(c,2);
+        }
+        else{
+            //code for landscape mode
+            gridLayoutManager = new GridLayoutManager(c,3);
+        }
         recycleItemProductAdapter = new RecycleItemProductAdapter(c,arrayItemGrind);
-        gridLayoutManager = new GridLayoutManager(c,2);
         storeIcon = (CircleImageView) findViewById(R.id.storeIcon);
 
         itemList.setLayoutManager(gridLayoutManager);
@@ -128,6 +136,9 @@ private SlidingRootNav slidingRootNav;
         addCategory = (TextView) findViewById(R.id.addCategory);
 
 
+
+
+        //*******************Screen Orientation***********************
 
 
 
@@ -155,7 +166,7 @@ private SlidingRootNav slidingRootNav;
       recycleItemCategoryAdapter.setOnItemClickListener(new RecycleItemCategoryAdapter.OnItemClickLitener() {
           @Override
           public void onItemClick(View view, int position) {
-              setitemListCategory(itemCategoryString,categoryItemList.get(position).getCategory());
+              setitemListCategory(itemCategoryString,categoryItemList.get(position).getKey());
               slidingRootNav.closeMenu();
           }
       });
@@ -191,13 +202,16 @@ private SlidingRootNav slidingRootNav;
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                               Utils.toster(c, dialog.getInputEditText().getText().toString());
-                               String key = mDatabase.push().getKey();
-                                CategoryMapModel categoryMapModel = new CategoryMapModel(key,dialog.getInputEditText().getText().toString());
-                                Map<String,Object> categoryVal = categoryMapModel.toMap();
-                                Map<String,Object> childUpdate = new HashMap<>();
-                                childUpdate.put(key,categoryVal);
-                                mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).updateChildren(childUpdate);
+                               if (!dialog.getInputEditText().getText().toString().trim().equals("")){
+                                   String key = mDatabase.push().getKey();
+                                   CategoryMapModel categoryMapModel = new CategoryMapModel(key,dialog.getInputEditText().getText().toString());
+                                   Map<String,Object> categoryVal = categoryMapModel.toMap();
+                                   Map<String,Object> childUpdate = new HashMap<>();
+                                   childUpdate.put(key,categoryVal);
+                                   mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).updateChildren(childUpdate);
+                               }else {
+                                   Utils.toster(c,"Error Empty Text");
+                               }
 
                             }
                         })
@@ -240,7 +254,7 @@ private SlidingRootNav slidingRootNav;
             @Override
             public void onItemClick(View view, int position, String Text) {
                if (Text.equals("edit")){
-                   editProductItem();
+                   editProductItem(position);
 
                }
                if (Text.equals("delete")){
@@ -266,75 +280,76 @@ private SlidingRootNav slidingRootNav;
         arrayItemGrind.clear();
         recycleItemProductAdapter.notifyDataSetChanged();
         if (category.equals("All")){
-            setitemListCategoryAll();
+            arrayItemGrind.clear();
+            mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                        ProductItemGridModel productItemGridModel = new ProductItemGridModel();
+                        AddItemMapModel addItemMapModel = dataSnapshot1.getValue(AddItemMapModel.class);
+                        productItemGridModel.setiName(addItemMapModel.itemName);
+                        productItemGridModel.setItemCategory(addItemMapModel.itemCategory);
+                        productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
+                        productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
+                        productItemGridModel.setItemKey(addItemMapModel.itemKey);
+                        arrayItemGrind.add(productItemGridModel);
+                        recycleItemProductAdapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }else {
+
+            mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).orderByChild(child).equalTo(category).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    arrayItemGrind.clear();
+                    for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                        ProductItemGridModel productItemGridModel = new ProductItemGridModel();
+                        AddItemMapModel addItemMapModel = dataSnapshot1.getValue(AddItemMapModel.class);
+                        productItemGridModel.setiName(addItemMapModel.itemName);
+                        productItemGridModel.setItemCategory(addItemMapModel.itemCategory);
+                        productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
+                        productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
+                        productItemGridModel.setItemKey(addItemMapModel.itemKey);
+                        arrayItemGrind.add(productItemGridModel);
+                        recycleItemProductAdapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
-        mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).orderByChild(child).equalTo(category).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                ProductItemGridModel productItemGridModel = new ProductItemGridModel();
-                AddItemMapModel addItemMapModel = dataSnapshot.getValue(AddItemMapModel.class);
-                productItemGridModel.setiName(addItemMapModel.itemName);
-                productItemGridModel.setItemCategory(addItemMapModel.itemCategory);
-                productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
-                productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
-                productItemGridModel.setItemKey(addItemMapModel.itemKey);
-                arrayItemGrind.add(productItemGridModel);
-                recycleItemProductAdapter.notifyDataSetChanged();
-            }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
         //*****************8 set ItemList Categroy  ***************************8
 
 
     }
     private void setitemListCategoryAll(){
-        arrayItemGrind.clear();
-        mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
+
+        mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                ProductItemGridModel productItemGridModel = new ProductItemGridModel();
-                AddItemMapModel addItemMapModel = dataSnapshot.getValue(AddItemMapModel.class);
-                productItemGridModel.setiName(addItemMapModel.itemName);
-                productItemGridModel.setItemCategory(addItemMapModel.itemCategory);
-                productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
-                productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
-                productItemGridModel.setItemKey(addItemMapModel.itemKey);
-                arrayItemGrind.add(productItemGridModel);
-                recycleItemProductAdapter.notifyDataSetChanged();
-            }
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                arrayItemGrind.clear();
+                for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                    ProductItemGridModel productItemGridModel = new ProductItemGridModel();
+                    AddItemMapModel addItemMapModel = dataSnapshot1.getValue(AddItemMapModel.class);
+                    productItemGridModel.setiName(addItemMapModel.itemName);
+                    productItemGridModel.setItemCategory(addItemMapModel.itemCategory);
+                    productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
+                    productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
+                    productItemGridModel.setItemKey(addItemMapModel.itemKey);
+                    arrayItemGrind.add(productItemGridModel);
+                    recycleItemProductAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -349,7 +364,6 @@ private SlidingRootNav slidingRootNav;
         public void onClick(View v) {
 
             Utils.toster(c,"Delete This Toast");
-
             Utils.toster(c,arrayItemGrind.get(itemPos).getItemKey());
             FirebaseStorage.getInstance().getReferenceFromUrl(arrayItemGrind.get(itemPos).getItemBannerUrl()).delete();
             FirebaseDatabase.getInstance().getReference()
@@ -361,7 +375,13 @@ private SlidingRootNav slidingRootNav;
 
     }
 
-    private void editProductItem(){
+    private void editProductItem(int position){
+        ProductItemGridModel productItemGridModel = arrayItemGrind.get(position);
+        Intent i = new Intent(InventoryRestaurant.this,UpdateProductActiivty.class);
+        i.putExtra(Utils.productItems.itemKey,productItemGridModel.getItemKey());
+        startActivity(i);
+
+
         Utils.toster(c,"Edit this Product Item");
     }
 
@@ -371,7 +391,7 @@ private SlidingRootNav slidingRootNav;
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
         dialog.setContentView(R.layout.dialog_edit_delete_category);
-        EditText category_field = (EditText) dialog.findViewById(R.id.category_field);
+        final EditText category_field = (EditText) dialog.findViewById(R.id.category_field);
         Button save = (Button) dialog.findViewById(R.id.btn_save);
         Button delete = (Button) dialog.findViewById(R.id.btn_delete);
         delete.setOnClickListener(new View.OnClickListener() {
@@ -379,10 +399,45 @@ private SlidingRootNav slidingRootNav;
             public void onClick(View v) {
                 mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).child(key).removeValue();
                 recycleItemCategoryAdapter.notifyDataSetChanged();
-                setitemListCategoryAll();
+
+                mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                            if (dataSnapshot1.child("itemCategory").getValue(String.class).equals(key)){
+                                dataSnapshot1.getRef().removeValue();
+                                FirebaseStorage.getInstance().getReferenceFromUrl(dataSnapshot1.child("itemBannerURL").getValue(String.class).toString()).delete();
+                                Utils.toster(c,dataSnapshot1.child("itemCategory").getValue().toString());
+                                recycleItemCategoryAdapter.notifyDataSetChanged();
+                                setitemListCategoryAll();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
                 dialog.dismiss();
                 categoryList();
 
+            }
+        });
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               // mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).child(key).updateChildren()
+                if (!category_field.getText().toString().trim().equals("")){
+                    CategoryMapModel categoryMapModel = new CategoryMapModel(key,category_field.getText().toString());
+                    Map<String,Object> categoryVal = categoryMapModel.toMap();
+                    Map<String,Object> childUpdate = new HashMap<>();
+                    childUpdate.put(key,categoryVal);
+                    mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).updateChildren(childUpdate);
+                }else {
+                    Utils.toster(c,"Error Empty Text");
+                }
+                dialog.dismiss();
             }
         });
 
@@ -392,32 +447,23 @@ private SlidingRootNav slidingRootNav;
 
     }
     private void categoryList(){
-        categoryItemList.clear();
         mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid())
-                .addChildEventListener(new ChildEventListener() {
+                .addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        CategoryModel categoryModel = new CategoryModel();
-                        CategoryMapModel categoryMapModel =dataSnapshot.getValue(CategoryMapModel.class);
-                        categoryModel.setKey(categoryMapModel.key);
-                        categoryModel.setCategory(categoryMapModel.category);
-                        categoryItemList.add(categoryModel);
-                        recycleItemCategoryAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        categoryItemList.clear();
+                        CategoryModel categoryModel1 = new CategoryModel();
+                        categoryModel1.setKey("All");
+                        categoryModel1.setCategory("All");
+                        categoryItemList.add(categoryModel1);
+                        for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                            CategoryModel categoryModel = new CategoryModel();
+                            CategoryMapModel categoryMapModel =dataSnapshot1.getValue(CategoryMapModel.class);
+                            categoryModel.setKey(categoryMapModel.key);
+                            categoryModel.setCategory(categoryMapModel.category);
+                            categoryItemList.add(categoryModel);
+                            recycleItemCategoryAdapter.notifyDataSetChanged();
+                        }
                     }
 
                     @Override

@@ -8,8 +8,8 @@
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        app:cardElevation="10dp"
+        android:layout_height="250dp"
+        app:cardElevation="5dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -24,35 +24,33 @@
 
             <ImageView
                 android:id="@+id/imgBanner"
-                android:layout_width="150dp"
+                android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:background="@color/colorAccent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_camera"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:background="@color/colorAccent"
+                android:src="@drawable/ic_camera" />
 
             <TextView
-                android:id="@+id/label_itemName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginLeft="16dp"
+                android:textSize="15sp"
+                android:textColor="@color/colorAccent"
                 android:layout_marginTop="8dp"
                 android:text="Item Name"
-                android:textColor="@color/colorAccent"
-                android:textSize="15sp"
-                app:layout_constraintStart_toEndOf="@+id/imgBanner"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/label_itemName"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imgBanner" />
 
             <TextView
                 android:id="@+id/label_itemCode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Category"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="UnCategorized"
                 android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="@+id/label_itemName"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/label_itemName" />
 
             <TextView
@@ -81,10 +79,11 @@
                 android:id="@+id/ic_edit"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:src="@drawable/ic_edit_white_48dp"
                 android:tint="@color/colorAccent"
-                app:layout_constraintStart_toStartOf="@+id/label_itemCode"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/label_itemCode" />
 
         </android.support.constraint.ConstraintLayout>

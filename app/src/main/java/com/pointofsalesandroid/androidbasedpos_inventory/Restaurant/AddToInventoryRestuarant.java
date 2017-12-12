@@ -68,6 +68,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
     AVLoadingIndicatorView avi;
     StorageReference mStorageReference;
     FloatingActionButton addCategory;
+    int categoryPosition;
     private static final int READ_REQUEST_CODE = 42;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +94,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             if (position!=0){
-                Category = categoryItemList.get(position);
+                Category = categoryItemListKey.get(position);
                 Utils.toster(c,categoryItemList.get(position));
              }
             }
@@ -113,13 +114,19 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                Utils.toster(c, dialog.getInputEditText().getText().toString());
-                                String key = mDatabase.push().getKey();
-                                CategoryMapModel categoryMapModel = new CategoryMapModel(key,dialog.getInputEditText().getText().toString());
-                                Map<String,Object> categoryVal = categoryMapModel.toMap();
-                                Map<String,Object> childUpdate = new HashMap<>();
-                                childUpdate.put(key,categoryVal);
-                                mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).updateChildren(childUpdate);
+
+                                if (!dialog.getInputEditText().getText().toString().trim().equals("")){
+                                    String key = mDatabase.push().getKey();
+                                    CategoryMapModel categoryMapModel = new CategoryMapModel(key,dialog.getInputEditText().getText().toString());
+                                    Map<String,Object> categoryVal = categoryMapModel.toMap();
+                                    Map<String,Object> childUpdate = new HashMap<>();
+                                    childUpdate.put(key,categoryVal);
+                                    mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).updateChildren(childUpdate);
+                                    categoryItemList.add(dialog.getInputEditText().getText().toString());
+                                    categoryItemListKey.add(key);
+                                }else {
+                                    Utils.toster(c,"Error Empty Text");
+                                }
                             }
                         })
                         .input("Category Name", "", new MaterialDialog.InputCallback() {
@@ -140,6 +147,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 categoryItemList.clear();
                 categoryItemList.add("Choose Category");
+                categoryItemListKey.add("null");
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
                     categoryItemList.add(dataSnapshot1.child("category").getValue(String.class).toString());
@@ -164,7 +172,6 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
                 }
             }
         });
-
         itemBanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -39,7 +39,7 @@
             <ImageView
                 android:id="@+id/product_banner"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="200dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_add_a_photo_black_24dp"
                 android:padding="150dp"
@@ -66,7 +66,6 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorAccent"
                     android:drawablePadding="5dp"
-                    android:text="Item One"
                     android:id="@+id/fItemName"
                     android:textColor="@color/colorText" />
             </android.support.design.widget.TextInputLayout>
@@ -108,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorAccent"
                     android:drawablePadding="5dp"
-                    android:text="$ 24.00"
+                    android:inputType="numberDecimal"
                     android:textColor="@color/colorText"
                     android:id="@+id/fitemPrice"
                     />
@@ -161,7 +160,6 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorAccent"
                     android:drawablePadding="5dp"
-                    android:text="47DF5DFS5D8D5"
                     android:textColor="@color/colorText"
                     android:id="@+id/fMenuCode"
 
@@ -209,7 +207,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:translationZ="4dp"
         app:indicatorColor="@color/colorWhite"
         app:indicatorName="BallPulseIndicator"
@@ -221,7 +219,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorAccent"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:translationZ="3dp"
         android:id="@+id/prog"
         ></RelativeLayout>

@@ -67,6 +67,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
     RelativeLayout prog;
     AVLoadingIndicatorView avi;
     StorageReference mStorageReference;
+    Uri ImageBannerOldURL;
     FloatingActionButton addCategory;
     int categoryPosition;
     private static final int READ_REQUEST_CODE = 42;
@@ -258,7 +259,9 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
             if (resultData != null) {
                 uri = resultData.getData();
                 Log.i("TAG", "Uri: " + uri.getLastPathSegment());
+                ImageBannerOldURL = bannerUri;
                 setImage(uri,itemBanner);
+
             }else {
                 System.out.println("null?");
             }
@@ -286,7 +289,8 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
 
     }
 
-    public void uploadItemBanner(Uri ImageStorageURI){
+    public void uploadItemBanner(final Uri ImageStorageURI){
+        setProgress(true);
         if (ImageStorageURI!=null){
             InputStream storeBannerFile = null;
             try {
@@ -294,6 +298,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
             }catch (FileNotFoundException e){
                 e.printStackTrace();
             }
+
             StorageReference ImagestoreRef = mStorageReference.child("images/"+Utils.restaurantItems+ File.separator+mAuth.getCurrentUser().getUid() + File.separator + getFileName(ImageStorageURI)
                     +storeBannerFile.toString()+File.separator+getFileName(ImageStorageURI));
 
@@ -309,6 +314,9 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
                     setProgress(false);
                 }
             });
+
+
+
         }
     }
 
@@ -348,6 +356,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
                 setProgress(false);
                 Intent i = new Intent(AddToInventoryRestuarant.this,InventoryRestaurant.class);
                 startActivity(i);
+                Glide.with(getApplicationContext()).pauseRequests();
                 finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -368,6 +377,12 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
             avi.setVisibility(View.INVISIBLE);
             prog.setVisibility(View.INVISIBLE);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Glide.with(getApplicationContext()).pauseRequests();
     }
 
 

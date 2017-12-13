@@ -256,6 +256,7 @@ private SlidingRootNav slidingRootNav;
                if (Text.equals("edit")){
                    editProductItem(position);
 
+
                }
                if (Text.equals("delete")){
                    Snackbar.make(constraintLayout,"Are You Sure you Want to Delete This Item?",Snackbar.LENGTH_SHORT)
@@ -380,9 +381,8 @@ private SlidingRootNav slidingRootNav;
         Intent i = new Intent(InventoryRestaurant.this,UpdateProductActiivty.class);
         i.putExtra(Utils.productItems.itemKey,productItemGridModel.getItemKey());
         startActivity(i);
+        finish();
 
-
-        Utils.toster(c,"Edit this Product Item");
     }
 
     //*************** custom Dialog  ***************

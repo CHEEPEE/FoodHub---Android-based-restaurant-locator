@@ -36,11 +36,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.pointofsalesandroid.androidbasedpos_inventory.ProfileManagement;
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
 import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.AddItemMapModel;
-import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.CategoryMapModel;
+import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.RestaurantLocationMapModel;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
@@ -118,7 +117,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
 
                                 if (!dialog.getInputEditText().getText().toString().trim().equals("")){
                                     String key = mDatabase.push().getKey();
-                                    CategoryMapModel categoryMapModel = new CategoryMapModel(key,dialog.getInputEditText().getText().toString());
+                                    RestaurantLocationMapModel categoryMapModel = new RestaurantLocationMapModel(key,dialog.getInputEditText().getText().toString());
                                     Map<String,Object> categoryVal = categoryMapModel.toMap();
                                     Map<String,Object> childUpdate = new HashMap<>();
                                     childUpdate.put(key,categoryVal);
@@ -151,7 +150,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
                 categoryItemListKey.add("null");
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
-                    categoryItemList.add(dataSnapshot1.child("category").getValue(String.class).toString());
+                    categoryItemList.add(dataSnapshot1.child("restauarantAddress").getValue(String.class).toString());
                     categoryItemListKey.add(dataSnapshot1.child("key").getValue(String.class).toString());
                     adapter.notifyDataSetChanged();
                 }

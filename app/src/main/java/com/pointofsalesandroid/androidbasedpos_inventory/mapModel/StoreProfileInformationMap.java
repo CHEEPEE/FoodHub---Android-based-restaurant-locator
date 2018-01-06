@@ -16,6 +16,9 @@ public class StoreProfileInformationMap {
     public String storeAddress;
     public String storeContact;
     public String storeType;
+    public String restaurantID;
+    public double locationLatitude;
+    public double locationLongitude;
 
     public StoreProfileInformationMap(){
 
@@ -25,13 +28,15 @@ public class StoreProfileInformationMap {
                                       String StoreBanner,
                                       String name,
                                       String address,
-                                      String contact)
+                                      String contact,String restaurantID)
     {
         this.storeProfileUrl = StoreProfile;
         this.storeBannerUrl = StoreBanner;
         this.storeName = name;
         this.storeAddress = address;
         this.storeContact = contact;
+        this.restaurantID = restaurantID;
+
 
 
     }
@@ -44,6 +49,8 @@ public class StoreProfileInformationMap {
         result.put("storeName",storeName);
         result.put("storeAddress",storeAddress);
         result.put("storeContact",storeContact);
+        result.put("restaurantID",restaurantID);
+
 
 
 

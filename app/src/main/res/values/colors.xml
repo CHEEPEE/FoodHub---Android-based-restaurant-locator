@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
    <!-- <color name="colorPrimary">#3498DB</color>-->
-    <color name="colorPrimaryDark">#F27C21</color>
+    <color name="colorPrimaryDark">#F9A11F</color>
     <color name="colorAccent">#F9A11F</color>
     <color name="colorText">#303030</color>
     <color name="colorIcon">#616161</color>
@@ -9,5 +9,6 @@
     <color name="colorWhite">#ffffff</color>
     <color name="slightGrey">#F5F5F5</color>
     <color name="colorTeal">#263238</color>
+    <color name="drawerCOlor">#c7000000</color>
     <color name="transparent">#00ffffff</color>
 </resources>

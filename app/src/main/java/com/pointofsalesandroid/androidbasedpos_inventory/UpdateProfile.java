@@ -4,8 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
-import android.media.Image;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
@@ -25,8 +26,14 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -39,11 +46,14 @@ import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-public class ProfileManagement extends AppCompatActivity {
+public class UpdateProfile extends AppCompatActivity {
     private static final int READ_REQUEST_CODE = 42;
     Uri imageToUploadUri;
     EditText fieldStorename,fieldStoreAddress, fieldStoreContact;
@@ -58,30 +68,27 @@ public class ProfileManagement extends AppCompatActivity {
     String bannerDownloadURL,iconDownloadURL;
     AVLoadingIndicatorView savingProgress;
     RelativeLayout progBlocker;
-    private boolean value;
-    private StorageReference mStorageRef;
-    private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 14;
-    private boolean mLocationPermissionGranted = false;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mLastKnownLocation;
 
-
+    private boolean value;
+    private StorageReference mStorageRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_management);
         submitInformation = (Button) findViewById(R.id.submitInformation);
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        getLocationPermission();
+
+
         mAuth = FirebaseAuth.getInstance();
         progBlocker = (RelativeLayout) findViewById(R.id.prog);
         savingProgress = (AVLoadingIndicatorView)findViewById(R.id.avi);
-        getLocation = (ImageView) findViewById(R.id.getLocation);
+
         fieldStorename = (EditText) findViewById(R.id.input_name);
         fieldStoreAddress = (EditText) findViewById(R.id.input_address);
         fieldStoreContact = (EditText) findViewById(R.id.input_contact);
         StoreBanner = (ImageView) findViewById(R.id.storeBanner);
         StoreProfileImage = (ImageView)findViewById(R.id.store_profile_icon);
+        getLocation = (ImageView) findViewById(R.id.getLocation);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.keepSynced(true);
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -103,19 +110,20 @@ public class ProfileManagement extends AppCompatActivity {
         StoreBanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            performFileSearch(StoreBanner,"banner");
+                performFileSearch(StoreBanner,"banner");
             }
         });
         StoreProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            performFileSearch(StoreProfileImage,"profile");
+                performFileSearch(StoreProfileImage,"profile");
             }
         });
+
         getLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(ProfileManagement.this,MapsProfileUpdateActivity.class);
+                Intent i = new Intent(UpdateProfile.this,MapsProfileUpdateActivity.class);
                 startActivity(i);
             }
         });
@@ -174,10 +182,10 @@ public class ProfileManagement extends AppCompatActivity {
 
     }
     private void setImage(Uri uri,ImageView imageView){
-       // floatClearImage.setVisibility(View.VISIBLE);
-       // Picasso.with(CreatePostActivity.this).load(uri).resize(300,600).into(imageToUpload);
+        // floatClearImage.setVisibility(View.VISIBLE);
+        // Picasso.with(CreatePostActivity.this).load(uri).resize(300,600).into(imageToUpload);
 
-        Glide.with(ProfileManagement.this).load(uri).into(imageView);
+        Glide.with(UpdateProfile.this).load(uri).into(imageView);
         imageView.setColorFilter(null);
 
 
@@ -229,9 +237,9 @@ public class ProfileManagement extends AppCompatActivity {
                 .updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-               toaster("success");
-               Intent i = new Intent(ProfileManagement.this, InventoryRestaurant.class);
-               startActivity(i);
+                toaster("success");
+                Intent i = new Intent(UpdateProfile.this, InventoryRestaurant.class);
+                startActivity(i);
             }
         });
 
@@ -289,7 +297,7 @@ public class ProfileManagement extends AppCompatActivity {
                     setDownloadUrl(dlURL,iconDownloadURL);
                     iconDownloadURL = dlURL;
                     saveStoreProfile(fieldStorename.getText().toString(),fieldStoreAddress.getText().toString()
-                    ,fieldStoreContact.getText().toString(),bannerDownloadURL,iconDownloadURL);
+                            ,fieldStoreContact.getText().toString(),bannerDownloadURL,iconDownloadURL);
 
                 }
 
@@ -333,7 +341,7 @@ public class ProfileManagement extends AppCompatActivity {
     }
 
     private void toaster(String text){
-        Toast.makeText(ProfileManagement.this,text,Toast.LENGTH_SHORT).show();
+        Toast.makeText(UpdateProfile.this,text,Toast.LENGTH_SHORT).show();
     }
     public void setProgress(boolean boo){
         if (boo){
@@ -343,39 +351,5 @@ public class ProfileManagement extends AppCompatActivity {
             savingProgress.setVisibility(View.INVISIBLE);
             progBlocker.setVisibility(View.INVISIBLE);
         }
-    }
-
-    private void getLocationPermission() {
-    /*
-     * Request location permission, so that we can get the location of the
-     * device. The result of the permission request is handled by a callback,
-     * onRequestPermissionsResult.
-     */
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true;
-
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mLocationPermissionGranted = true;
-                }
-            }
-        }
-
     }
 }

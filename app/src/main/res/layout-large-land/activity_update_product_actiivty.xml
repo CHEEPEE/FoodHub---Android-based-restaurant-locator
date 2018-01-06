@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="@color/colorAccent"
     android:background="@color/slightGrey"
     tools:context="com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.AddToInventoryRestuarant">
 
@@ -25,7 +24,7 @@
 
     <ImageView
         android:id="@+id/product_banner"
-        android:layout_width="250dp"
+        android:layout_width="350dp"
         android:layout_height="match_parent"
         android:padding="150dp"
         android:scaleType="centerCrop"

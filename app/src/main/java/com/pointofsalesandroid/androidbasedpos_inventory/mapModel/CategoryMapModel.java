@@ -24,7 +24,7 @@ public class CategoryMapModel {
     public Map<String,Object> toMap(){
         HashMap<String,Object> result = new HashMap<>();
         result.put("key",key);
-        result.put("category",category);
+        result.put("restauarantAddress",category);
 
         return result;
     }

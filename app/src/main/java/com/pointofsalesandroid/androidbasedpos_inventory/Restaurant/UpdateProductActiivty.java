@@ -39,8 +39,7 @@ import com.google.firebase.storage.UploadTask;
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
 import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.AddItemMapModel;
-import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.CategoryMapModel;
-import com.pointofsalesandroid.androidbasedpos_inventory.models.CategoryModel;
+import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.RestaurantLocationMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.models.ProductItemGridModel;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -72,6 +71,7 @@ StorageReference mStorageRefernce;
 String value = null;
 FloatingActionButton addCategory;
 Uri OldBannerUrl;
+Uri previewsBannerUrl;
     private static final int READ_REQUEST_CODE = 42;
 ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
     @Override
@@ -103,8 +103,8 @@ ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
                 imgBannerURL = Uri.parse(addItemMapModel.itemBannerURL);
                 setImage(Uri.parse(addItemMapModel.itemBannerURL),bannerImage);
                 setSpinner(addItemMapModel.itemCategory);
-                Category = addItemMapModel.itemCategory;
-
+                previewsBannerUrl = Uri.parse(addItemMapModel.itemBannerURL);
+                OldBannerUrl = Uri.parse(addItemMapModel.itemBannerURL);
 
             }
 
@@ -124,7 +124,7 @@ ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
                 categoryItemList.add("Choose Category");
                 categoryItemListKey.add("null");
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    categoryItemList.add(dataSnapshot1.child("category").getValue(String.class).toString());
+                    categoryItemList.add(dataSnapshot1.child("restauarantAddress").getValue(String.class).toString());
                     categoryItemListKey.add(dataSnapshot1.child("key").getValue(String.class).toString());
                     adapter.notifyDataSetChanged();
 
@@ -202,7 +202,7 @@ ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
 
                                 if (!dialog.getInputEditText().getText().toString().trim().equals("")){
                                     String key = mDatabase.push().getKey();
-                                    CategoryMapModel categoryMapModel = new CategoryMapModel(key,dialog.getInputEditText().getText().toString());
+                                    RestaurantLocationMapModel categoryMapModel = new RestaurantLocationMapModel(key,dialog.getInputEditText().getText().toString());
                                     Map<String,Object> categoryVal = categoryMapModel.toMap();
                                     Map<String,Object> childUpdate = new HashMap<>();
                                     childUpdate.put(key,categoryVal);
@@ -292,10 +292,10 @@ ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                            CategoryMapModel categoryMapModel = dataSnapshot1.getValue(CategoryMapModel.class);
+                            RestaurantLocationMapModel categoryMapModel = dataSnapshot1.getValue(RestaurantLocationMapModel.class);
                             try {
                                 if (key.equals(categoryMapModel.key)) {
-                                    value = categoryMapModel.category;
+                                    value = categoryMapModel.restauarantAddress;
                                     setSpinner(value);
                                 }
 
@@ -349,12 +349,12 @@ ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
             if (resultData != null) {
                 uri = resultData.getData();
                 Log.i("TAG", "Uri: " + uri.getLastPathSegment());
-                OldBannerUrl = imgBannerURL;
                 setImage(uri,bannerImage);
-
                 imageEdited = true;
+
             }else {
                 System.out.println("null?");
+
             }
 
         }
@@ -428,7 +428,9 @@ ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
             public void onSuccess(Void aVoid) {
                 setProgress(false);
                 Intent i = new Intent(UpdateProductActiivty.this,InventoryRestaurant.class);
-                FirebaseStorage.getInstance().getReferenceFromUrl(OldBannerUrl.toString()).delete();
+                if (imageEdited){
+                    FirebaseStorage.getInstance().getReferenceFromUrl(OldBannerUrl.toString()).delete();
+                }
                 startActivity(i);
                 finish();
 
@@ -461,6 +463,13 @@ ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(UpdateProductActiivty.this,InventoryRestaurant.class);
+        startActivity(i);
+        finish();
+    }
 }
 
 

@@ -1,11 +1,9 @@
 package com.pointofsalesandroid.androidbasedpos_inventory.Restaurant;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -14,23 +12,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.InputType;
 import android.view.View;
 import android.support.v7.widget.Toolbar;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,11 +34,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.pointofsalesandroid.androidbasedpos_inventory.LogInActivity;
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
+import com.pointofsalesandroid.androidbasedpos_inventory.UpdateProfile;
 import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
+import com.pointofsalesandroid.androidbasedpos_inventory.adapter.GlideApp;
 import com.pointofsalesandroid.androidbasedpos_inventory.adapter.RecycleItemCategoryAdapter;
 import com.pointofsalesandroid.androidbasedpos_inventory.adapter.RecycleItemProductAdapter;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.AddItemMapModel;
-import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.CategoryMapModel;
+import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.RestaurantLocationMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.StoreProfileInformationMap;
 import com.pointofsalesandroid.androidbasedpos_inventory.models.CategoryModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.models.ProductItemGridModel;
@@ -61,7 +58,7 @@ public class InventoryRestaurant extends AppCompatActivity {
 FloatingActionButton addProducts;
 Toolbar inventoryToolbar;
 FirebaseAuth mAuth;
-TextView menuSingOut;
+TextView menuSingOut,accountSettings;
 TextView StoreN,addCategory;
 RecyclerView categoryList,itemList;
 ArrayList<ProductItemGridModel> arrayItemGrind = new ArrayList<>();
@@ -78,6 +75,8 @@ ArrayList<StoreProfileModel> ArrayStoreProfile = new ArrayList<>();
 ArrayList<CategoryModel> categoryItemList = new ArrayList<>();
 RecycleItemCategoryAdapter recycleItemCategoryAdapter;
 private SlidingRootNav slidingRootNav;
+Context context;
+ImageView drawerImgBackground;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,10 +89,13 @@ private SlidingRootNav slidingRootNav;
         mDatabase = FirebaseDatabase.getInstance().getReference();
         constraintLayout = (ConstraintLayout) findViewById(R.id.constrainLayout);
         itemList = (RecyclerView) findViewById(R.id.itemListGrid);
+        context = InventoryRestaurant.this;
+
 
 
 
         inventoryToolbar = (Toolbar) findViewById(R.id.inventoryToolbar);
+        setSupportActionBar(inventoryToolbar);
         c = InventoryRestaurant.this;
         addProducts.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,6 +136,8 @@ private SlidingRootNav slidingRootNav;
         StoreN = (TextView) findViewById(R.id.textStoreName);
         menuSingOut = (TextView) findViewById(R.id.text_signOut);
         addCategory = (TextView) findViewById(R.id.addCategory);
+        accountSettings = (TextView) findViewById(R.id.accountSettings);
+        drawerImgBackground = (ImageView) findViewById(R.id.drawerImgBackground);
 
 
 
@@ -144,8 +148,8 @@ private SlidingRootNav slidingRootNav;
 
         //************** Recycler ******************
         recycleItemCategoryAdapter = new RecycleItemCategoryAdapter(InventoryRestaurant.this,categoryItemList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(InventoryRestaurant.this);
-        categoryList = (RecyclerView)findViewById(R.id.categoryList);
+        RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL);
+        categoryList = (RecyclerView)findViewById(R.id.rv_categoryItems);
         categoryList.setItemAnimator(new DefaultItemAnimator());
         categoryList.setLayoutManager(layoutManager);
         categoryList.setAdapter(recycleItemCategoryAdapter);
@@ -204,7 +208,7 @@ private SlidingRootNav slidingRootNav;
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                if (!dialog.getInputEditText().getText().toString().trim().equals("")){
                                    String key = mDatabase.push().getKey();
-                                   CategoryMapModel categoryMapModel = new CategoryMapModel(key,dialog.getInputEditText().getText().toString());
+                                   RestaurantLocationMapModel categoryMapModel = new RestaurantLocationMapModel(key,dialog.getInputEditText().getText().toString());
                                    Map<String,Object> categoryVal = categoryMapModel.toMap();
                                    Map<String,Object> childUpdate = new HashMap<>();
                                    childUpdate.put(key,categoryVal);
@@ -240,13 +244,23 @@ private SlidingRootNav slidingRootNav;
                 storeProfileModel.setStoreContact(storeProfileInformationMap.storeContact);
                 ArrayStoreProfile.add(storeProfileModel);
                 StoreN.setText(ArrayStoreProfile.get(0).getStoreName());
-                Glide.with(c).load(ArrayStoreProfile.get(0).getStoreProfileUrl()).into(storeIcon);
+                GlideApp.with(c).load(ArrayStoreProfile.get(0).getStoreProfileUrl()).override(200,200).into(storeIcon);
+                GlideApp.with(c).load(ArrayStoreProfile.get(0).getStoreBannerUrl()).override(200,200).into(drawerImgBackground);
 
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+
+        accountSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i  = new Intent(context, UpdateProfile.class);
+                startActivity(i);
+                finish();
             }
         });
 
@@ -265,16 +279,6 @@ private SlidingRootNav slidingRootNav;
                }
             }
         });
-
-
-
-
-
-        //*************set Text And ImageDraw ********************
-
-        //************* Imageview SetOnclick *********************
-
-
     }
 
     private void setitemListCategory(String child,String category){
@@ -429,7 +433,7 @@ private SlidingRootNav slidingRootNav;
             public void onClick(View v) {
                // mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).child(key).updateChildren()
                 if (!category_field.getText().toString().trim().equals("")){
-                    CategoryMapModel categoryMapModel = new CategoryMapModel(key,category_field.getText().toString());
+                    RestaurantLocationMapModel categoryMapModel = new RestaurantLocationMapModel(key,category_field.getText().toString());
                     Map<String,Object> categoryVal = categoryMapModel.toMap();
                     Map<String,Object> childUpdate = new HashMap<>();
                     childUpdate.put(key,categoryVal);
@@ -458,9 +462,9 @@ private SlidingRootNav slidingRootNav;
                         categoryItemList.add(categoryModel1);
                         for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                             CategoryModel categoryModel = new CategoryModel();
-                            CategoryMapModel categoryMapModel =dataSnapshot1.getValue(CategoryMapModel.class);
+                            RestaurantLocationMapModel categoryMapModel =dataSnapshot1.getValue(RestaurantLocationMapModel.class);
                             categoryModel.setKey(categoryMapModel.key);
-                            categoryModel.setCategory(categoryMapModel.category);
+                            categoryModel.setCategory(categoryMapModel.restauarantAddress);
                             categoryItemList.add(categoryModel);
                             recycleItemCategoryAdapter.notifyDataSetChanged();
                         }

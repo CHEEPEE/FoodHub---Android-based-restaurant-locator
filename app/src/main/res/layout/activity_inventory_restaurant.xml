@@ -11,8 +11,8 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:background="@color/colorWhite"
         android:layout_height="60dp"
+        android:background="@color/colorWhite"
         app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,17 +21,17 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/inventoryToolbar"
-            android:elevation="0dp"
-            app:title="@string/app_name"
-            app:titleTextColor="@color/colorAccent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorWhite"
+            android:elevation="0dp"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="@string/app_name"
+            app:titleTextColor="@color/colorAccent" />
     </android.support.design.widget.AppBarLayout>
 
     <View
@@ -45,15 +45,16 @@
         app:layout_constraintTop_toBottomOf="@id/appBarLayout" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/itemListGrid"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:id="@+id/rv_categoryItems"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/cardbackground"
         app:layout_constraintEnd_toEndOf="parent"
-        android:clickable="true"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topDivider" />
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"></android.support.v7.widget.RecyclerView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/addProducts"
@@ -66,8 +67,21 @@
         android:tint="@color/colorWhite"
         app:backgroundTint="@color/colorAccent"
         app:fabSize="normal"
+        app:layout_behavior="com.support.android.designlibdemo.ScrollAwareFABBehavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_behavior="com.support.android.designlibdemo.ScrollAwareFABBehavior"
         app:srcCompat="@android:drawable/ic_input_add" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/itemListGrid"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rv_categoryItems"
+        app:layout_constraintVertical_bias="0.0" />
 </android.support.constraint.ConstraintLayout>

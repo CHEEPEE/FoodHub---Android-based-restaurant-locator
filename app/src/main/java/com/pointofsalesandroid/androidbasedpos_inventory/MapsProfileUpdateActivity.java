@@ -10,9 +10,11 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.CheckBox;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.util.Util;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
@@ -23,12 +25,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -41,8 +43,10 @@ import com.pointofsalesandroid.androidbasedpos_inventory.models.RestaurantLocati
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class MapsProfileUpdateActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = MapsProfileUpdateActivity.class.getSimpleName();
@@ -62,8 +66,9 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
     private LatLng currnetLoc;
     TextView lblLocation;
     private Marker marker;
-    private double restoLocationLatitued;
+    private double restoLocationLatitude;
     private double restoLocationLongitude;
+    private ImageView confirmLocation;
     private DatabaseReference mDataBase;
     private FirebaseAuth mAuth;
     private ArrayList<RestaurantLocationModel> restaurantLocationModels = new ArrayList<>();
@@ -85,6 +90,7 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
             mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
         }
         lblLocation = (TextView) findViewById(R.id.lblLocation);
+        confirmLocation = (ImageView) findViewById(R.id.confirmLocation);
 
         // Construct a GeoDataClient.
         mGeoDataClient = Places.getGeoDataClient(this, null);
@@ -96,27 +102,48 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getLocationPermission();
 
-        mDataBase.child(Utils.restaurantLocation).child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
+        mDataBase.child(Utils.restaurantLocation).child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 RestaurantLocationModel restaurantLocationModel = new RestaurantLocationModel();
                 RestaurantLocationMapModel restaurantLocationMapModel = dataSnapshot.getValue(RestaurantLocationMapModel.class);
-                restaurantLocationModel.setKey(restaurantLocationMapModel.key);
-                restaurantLocationModel.setRestaurantAddress(restaurantLocationMapModel.restauarantAddress);
-                restaurantLocationModel.setLocationLat(restaurantLocationMapModel.locationLatitude);
-                restaurantLocationModel.setLocationLongitude(restaurantLocationMapModel.locationLongitude);
-                restaurantLocationModels.add(restaurantLocationModel);
-                restoLocationLatitued = restaurantLocationMapModel.locationLatitude;
-                restoLocationLongitude = restaurantLocationMapModel.locationLongitude;
-                setLocation();
-
-
-
-
+                if (restaurantLocationMapModel!=null){
+                    restaurantLocationModel.setKey(restaurantLocationMapModel.key);
+                    restaurantLocationModel.setRestaurantAddress(restaurantLocationMapModel.restauarantAddress);
+                    restaurantLocationModel.setLocationLat(restaurantLocationMapModel.locationLatitude);
+                    restaurantLocationModel.setLocationLongitude(restaurantLocationMapModel.locationLongitude);
+                    restaurantLocationModels.add(restaurantLocationModel);
+                    restoLocationLatitude = restaurantLocationMapModel.locationLatitude;
+                    restoLocationLongitude = restaurantLocationMapModel.locationLongitude;
+                    setLocation();
+                }else {
+                    getDeviceLocation();
+                }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        confirmLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String addressLocation = lblLocation.getText().toString();
+                double latitude = restoLocationLatitude;
+                double longitude = restoLocationLongitude;
+                RestaurantLocationMapModel restaurantLocationMapModel = new RestaurantLocationMapModel(mAuth.getUid(),addressLocation,latitude,longitude);
+                Map<String,Object> restLocVal = restaurantLocationMapModel.toMap();
+                Map<String,Object> childUpdate = new HashMap<>();
+                childUpdate.put(mAuth.getUid(),restLocVal);
+                mDataBase.child(Utils.restaurantLocation).updateChildren(childUpdate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        finish();
+                    }
+                });
+
 
             }
         });
@@ -159,9 +186,7 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                 currnetLoc = new LatLng(arg0.getPosition().latitude,arg0.getPosition().longitude);
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(arg0.getPosition()));
 
-
                 try {
-
                     Geocoder geo = new Geocoder(MapsProfileUpdateActivity.this, Locale.getDefault());
                     List<Address> addresses = geo.getFromLocation(arg0.getPosition().latitude, arg0.getPosition().longitude, 1);
                     if (addresses.isEmpty()) {
@@ -173,13 +198,14 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                              /*  Log.i("Location",addresses.get(i).getAddressLine(0)+", "+addresses.get(i).getFeatureName() + ", " + addresses.get(i).getLocality() +", " + addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getFeatureName() + ", " + addresses.get(i).getCountryName());*/
                                Log.i("Location",addresses.get(i).getLocality()+", "+addresses.get(i).getSubAdminArea()+", "+addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getCountryName());
                                 lblLocation.setText(addresses.get(i).getLocality()+", "+addresses.get(i).getSubAdminArea()+", "+addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getCountryName());
-                                restoLocationLatitued = arg0.getPosition().latitude;
+                                restoLocationLatitude = arg0.getPosition().latitude;
                                 restoLocationLongitude = arg0.getPosition().longitude;
                            }
                         }
                     }
                 }catch (IOException e){
                     Log.i("System out error", e.toString());
+                    Utils.toster(MapsProfileUpdateActivity.this,"Please Check Internet Connection");
                 }
             }
             @Override
@@ -208,13 +234,16 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                             for (int i = 0;i<addresses.size();i++){
                                 Log.i("Location",addresses.get(i).getLocality()+", "+addresses.get(i).getSubAdminArea()+", "+addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getCountryName());
                                 lblLocation.setText(addresses.get(i).getLocality()+", "+addresses.get(i).getSubAdminArea()+", "+addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getCountryName());
-                                restoLocationLatitued = latLng.latitude;
-                                restoLocationLatitued = latLng.longitude;
+                                restoLocationLatitude = latLng.latitude;
+                                restoLocationLatitude = latLng.longitude;
+
                             }
                         }
                     }
                 }catch (IOException e){
                     Log.i("System out error", e.toString());
+                    Utils.toster(MapsProfileUpdateActivity.this,"Please Check Internet Connection");
+
                 }
             }
         });
@@ -313,6 +342,8 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                                         }
                                     }catch (IOException e){
                                         Log.i("System out error", e.toString());
+                                        Utils.toster(MapsProfileUpdateActivity.this,"Please Check Internet Connection");
+
                                     }
 
 
@@ -360,7 +391,7 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
         try {
             if (mLocationPermissionGranted) {
                 LatLng latLng = null;
-                    latLng =  new LatLng(restoLocationLatitued,restoLocationLongitude);
+                    latLng =  new LatLng(restoLocationLatitude,restoLocationLongitude);
 
 
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
@@ -389,6 +420,8 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                         }
                     }
                 }catch (IOException e){
+                    Utils.toster(MapsProfileUpdateActivity.this,"Please Check Internet Connection");
+
                     Log.i("System out error", e.toString());
                 }
             }
@@ -396,4 +429,6 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
+
 }

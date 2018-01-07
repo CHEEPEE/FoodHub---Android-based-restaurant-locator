@@ -28,8 +28,11 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -112,6 +115,25 @@ public class ProfileManagement extends AppCompatActivity {
             performFileSearch(StoreProfileImage,"profile");
             }
         });
+        getLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(ProfileManagement.this,MapsProfileUpdateActivity.class);
+                startActivity(i);
+            }
+        });
+        mDatabase.child(Utils.restaurantLocation).child(mAuth.getUid()).child("restauarantAddress").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                fieldStoreAddress.setText(dataSnapshot.getValue(String.class));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         getLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

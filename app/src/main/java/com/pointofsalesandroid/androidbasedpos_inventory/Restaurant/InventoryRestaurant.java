@@ -25,6 +25,8 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,6 +42,7 @@ import com.pointofsalesandroid.androidbasedpos_inventory.adapter.GlideApp;
 import com.pointofsalesandroid.androidbasedpos_inventory.adapter.RecycleItemCategoryAdapter;
 import com.pointofsalesandroid.androidbasedpos_inventory.adapter.RecycleItemProductAdapter;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.AddItemMapModel;
+import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.CategoryMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.RestaurantLocationMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.StoreProfileInformationMap;
 import com.pointofsalesandroid.androidbasedpos_inventory.models.CategoryModel;
@@ -208,7 +211,7 @@ ImageView drawerImgBackground;
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                if (!dialog.getInputEditText().getText().toString().trim().equals("")){
                                    String key = mDatabase.push().getKey();
-                                   RestaurantLocationMapModel categoryMapModel = new RestaurantLocationMapModel(key,dialog.getInputEditText().getText().toString());
+                                   CategoryMapModel categoryMapModel = new CategoryMapModel(key,dialog.getInputEditText().getText().toString());
                                    Map<String,Object> categoryVal = categoryMapModel.toMap();
                                    Map<String,Object> childUpdate = new HashMap<>();
                                    childUpdate.put(key,categoryVal);
@@ -229,8 +232,6 @@ ImageView drawerImgBackground;
 
             }
         });
-
-
         //************** get Profile ********************
         mDatabase.child("storeProfiles").child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -244,8 +245,14 @@ ImageView drawerImgBackground;
                 storeProfileModel.setStoreContact(storeProfileInformationMap.storeContact);
                 ArrayStoreProfile.add(storeProfileModel);
                 StoreN.setText(ArrayStoreProfile.get(0).getStoreName());
-                GlideApp.with(c).load(ArrayStoreProfile.get(0).getStoreProfileUrl()).override(200,200).into(storeIcon);
-                GlideApp.with(c).load(ArrayStoreProfile.get(0).getStoreBannerUrl()).override(200,200).into(drawerImgBackground);
+                try{
+                    GlideApp.with(c).load(ArrayStoreProfile.get(0).getStoreProfileUrl()).override(200,200).into(storeIcon);
+                    GlideApp.with(c).load(ArrayStoreProfile.get(0).getStoreBannerUrl()).override(200,200).into(drawerImgBackground);
+                }catch (IllegalArgumentException e){
+
+                }
+              /*  GlideApp.with(InventoryRestaurant.this).clear(storeIcon);
+                GlideApp.with(InventoryRestaurant.this).clear(drawerImgBackground);*/
 
             }
 
@@ -433,7 +440,7 @@ ImageView drawerImgBackground;
             public void onClick(View v) {
                // mDatabase.child(Utils.storeItemCategory).child(mAuth.getCurrentUser().getUid()).child(key).updateChildren()
                 if (!category_field.getText().toString().trim().equals("")){
-                    RestaurantLocationMapModel categoryMapModel = new RestaurantLocationMapModel(key,category_field.getText().toString());
+                    CategoryMapModel categoryMapModel = new CategoryMapModel(key,category_field.getText().toString());
                     Map<String,Object> categoryVal = categoryMapModel.toMap();
                     Map<String,Object> childUpdate = new HashMap<>();
                     childUpdate.put(key,categoryVal);
@@ -462,14 +469,13 @@ ImageView drawerImgBackground;
                         categoryItemList.add(categoryModel1);
                         for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                             CategoryModel categoryModel = new CategoryModel();
-                            RestaurantLocationMapModel categoryMapModel =dataSnapshot1.getValue(RestaurantLocationMapModel.class);
+                            CategoryMapModel categoryMapModel =dataSnapshot1.getValue(CategoryMapModel.class);
                             categoryModel.setKey(categoryMapModel.key);
-                            categoryModel.setCategory(categoryMapModel.restauarantAddress);
+                            categoryModel.setCategory(categoryMapModel.category);
                             categoryItemList.add(categoryModel);
                             recycleItemCategoryAdapter.notifyDataSetChanged();
                         }
                     }
-
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 

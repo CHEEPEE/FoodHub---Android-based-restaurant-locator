@@ -35,7 +35,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:background="@drawable/cardbackground"
-        android:padding="0dp"
+        android:padding="10dp"
         map:layout_constraintEnd_toStartOf="@+id/confirmLocation"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toBottomOf="@+id/lblconfirmLocation" />

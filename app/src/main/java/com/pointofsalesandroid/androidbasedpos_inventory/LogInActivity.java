@@ -139,6 +139,7 @@ public class LogInActivity extends AppCompatActivity {
                                     } else {
                                         Intent i = new Intent(LogInActivity.this, InventoryRestaurant.class);
                                         startActivity(i);
+                                        finish();
                                     }
                                     finish();
                                 }
@@ -174,6 +175,7 @@ public class LogInActivity extends AppCompatActivity {
                     if (dataSnapshot.getValue() == null){
                         Intent i = new Intent(LogInActivity.this,ProfileManagement.class);
                         startActivity(i);
+                        finish();
                     }else {
                        Intent i =  new Intent(LogInActivity.this,InventoryRestaurant.class);
                        startActivity(i);

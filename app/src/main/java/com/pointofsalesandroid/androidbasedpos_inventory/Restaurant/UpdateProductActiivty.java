@@ -39,6 +39,7 @@ import com.google.firebase.storage.UploadTask;
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
 import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.AddItemMapModel;
+import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.CategoryMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.RestaurantLocationMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.models.ProductItemGridModel;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -202,7 +203,7 @@ ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
 
                                 if (!dialog.getInputEditText().getText().toString().trim().equals("")){
                                     String key = mDatabase.push().getKey();
-                                    RestaurantLocationMapModel categoryMapModel = new RestaurantLocationMapModel(key,dialog.getInputEditText().getText().toString());
+                                    CategoryMapModel categoryMapModel = new CategoryMapModel(key,dialog.getInputEditText().getText().toString());
                                     Map<String,Object> categoryVal = categoryMapModel.toMap();
                                     Map<String,Object> childUpdate = new HashMap<>();
                                     childUpdate.put(key,categoryVal);

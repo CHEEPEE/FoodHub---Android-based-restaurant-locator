@@ -8,6 +8,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -24,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.util.Util;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,13 +37,18 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.InventoryRestaurant;
+import com.pointofsalesandroid.androidbasedpos_inventory.adapter.GlideApp;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.StoreProfileInformationMap;
+import com.pointofsalesandroid.androidbasedpos_inventory.models.StoreProfileModel;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
@@ -65,7 +72,7 @@ public class UpdateProfile extends AppCompatActivity {
     String imageType;
     String storetype;
     FirebaseAuth mAuth;
-    String bannerDownloadURL,iconDownloadURL;
+    private String bannerDownloadURL,iconDownloadURL;
     AVLoadingIndicatorView savingProgress;
     RelativeLayout progBlocker;
     private Location mLastKnownLocation;
@@ -104,6 +111,43 @@ public class UpdateProfile extends AppCompatActivity {
                         toaster("missing banner of profile icon");
                     }
                 }
+            }
+        });
+
+        mDatabase.child(Utils.storeProfiles).child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                StoreProfileModel storeProfileModel = new StoreProfileModel();
+                StoreProfileInformationMap storeProfileInformationMap = dataSnapshot.getValue(StoreProfileInformationMap.class);
+               try {
+                   GlideApp.with(UpdateProfile.this).load(storeProfileInformationMap.storeBannerUrl).into(StoreBanner);
+                   GlideApp.with(UpdateProfile.this).load(storeProfileInformationMap.storeProfileUrl).into(StoreProfileImage);
+               }catch (IllegalArgumentException e){
+
+               }
+                bannerDownloadURL = storeProfileInformationMap.storeBannerUrl;
+                iconDownloadURL = storeProfileInformationMap.storeProfileUrl;
+                bannerUri =Uri.parse(storeProfileInformationMap.storeBannerUrl);
+                iconUri = Uri.parse(storeProfileInformationMap.storeProfileUrl);
+
+                fieldStorename.setText(storeProfileInformationMap.storeName);
+                fieldStoreContact.setText(storeProfileInformationMap.storeContact);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mDatabase.child(Utils.restaurantLocation).child(mAuth.getUid()).child("restauarantAddress").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                fieldStoreAddress.setText(dataSnapshot.getValue(String.class));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
@@ -228,7 +272,6 @@ public class UpdateProfile extends AppCompatActivity {
         String key = mAuth.getUid();
         StoreProfileInformationMap storeProfileInformationMap = new StoreProfileInformationMap(iconDownloadURL,
                 bannerDownloadURL,storename,storeAddress,storeContact,key);
-
         Map<String,Object> postValue = storeProfileInformationMap.toMap();
         Map<String,Object> childUpdates = new HashMap<>();
         childUpdates.put(key,postValue);
@@ -242,7 +285,6 @@ public class UpdateProfile extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
     }
 
 
@@ -256,26 +298,30 @@ public class UpdateProfile extends AppCompatActivity {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            StorageReference ImageStorageStore = mStorageRef.child("images/storeProfileImages" + File.separator+mAuth.getCurrentUser().getUid() + File.separator + getFileName(ImageStorageURI)
-                    +storeBannerFile.toString()+File.separator+getFileName(ImageStorageURI));
-            ImageStorageStore.putStream(storeBannerFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    @SuppressWarnings("VisibleForTests")
-                    String dlURL = taskSnapshot.getDownloadUrl().toString();
-                    bannerDownloadURL = dlURL;
-                    uploadProfileIcon(iconUri,bannerDownloadURL);
+           try{
+               StorageReference ImageStorageStore = mStorageRef.child("images/storeProfileImages" + File.separator+mAuth.getCurrentUser().getUid() + File.separator + getFileName(ImageStorageURI)
+                       +storeBannerFile.toString()+File.separator+getFileName(ImageStorageURI));
+               ImageStorageStore.putStream(storeBannerFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                   @Override
+                   public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                       @SuppressWarnings("VisibleForTests")
+                       String dlURL = taskSnapshot.getDownloadUrl().toString();
+                       bannerDownloadURL = dlURL;
+                       uploadProfileIcon(iconUri,bannerDownloadURL);
 
+                   }
 
-                }
-
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    setProgress(false);
-                    toaster("Saving Failed");
-                }
-            });
+               }).addOnFailureListener(new OnFailureListener() {
+                   @Override
+                   public void onFailure(@NonNull Exception e) {
+                       setProgress(false);
+                       toaster("Saving Failed");
+                   }
+               });
+           }catch (NullPointerException e){
+                updateRestoCredentials();
+               uploadProfileIcon(iconUri,bannerDownloadURL);
+           }
 
         }
     }
@@ -287,27 +333,31 @@ public class UpdateProfile extends AppCompatActivity {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            StorageReference ImageStorageStore = mStorageRef.child("images/storeProfileImages" + File.separator+mAuth.getCurrentUser().getUid() + File.separator + getFileName(ImageStorageURI)
-                    +storeBannerFile.toString()+File.separator+getFileName(ImageStorageURI));
-            ImageStorageStore.putStream(storeBannerFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    @SuppressWarnings("VisibleForTests")
-                    String dlURL = taskSnapshot.getDownloadUrl().toString();
-                    setDownloadUrl(dlURL,iconDownloadURL);
-                    iconDownloadURL = dlURL;
-                    saveStoreProfile(fieldStorename.getText().toString(),fieldStoreAddress.getText().toString()
-                            ,fieldStoreContact.getText().toString(),bannerDownloadURL,iconDownloadURL);
+           try {
+               StorageReference ImageStorageStore = mStorageRef.child("images/storeProfileImages" + File.separator+mAuth.getCurrentUser().getUid() + File.separator + getFileName(ImageStorageURI)
+                       +storeBannerFile.toString()+File.separator+getFileName(ImageStorageURI));
+               ImageStorageStore.putStream(storeBannerFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                   @Override
+                   public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                       @SuppressWarnings("VisibleForTests")
+                       String dlURL = taskSnapshot.getDownloadUrl().toString();
+                       setDownloadUrl(dlURL,iconDownloadURL);
+                       iconDownloadURL = dlURL;
+                       saveStoreProfile(fieldStorename.getText().toString(),fieldStoreAddress.getText().toString()
+                               ,fieldStoreContact.getText().toString(),bannerDownloadURL,iconDownloadURL);
 
-                }
+                   }
 
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    setProgress(false);
-                    toaster("Saving Failed");
-                }
-            });
+               }).addOnFailureListener(new OnFailureListener() {
+                   @Override
+                   public void onFailure(@NonNull Exception e) {
+                       setProgress(false);
+                       toaster("Saving Failed");
+                   }
+               });
+           }catch (NullPointerException e){
+                updateRestoCredentials();
+           }
 
         }
     }
@@ -352,4 +402,46 @@ public class UpdateProfile extends AppCompatActivity {
             progBlocker.setVisibility(View.INVISIBLE);
         }
     }
+
+    private void updateRestoCredentials(){
+      final DatabaseReference storeProfielDataBaseReference = mDatabase.child(Utils.storeProfiles).child(mAuth.getUid());
+
+        storeProfielDataBaseReference.child(Utils.restaurantProfileItems.restoName).setValue(fieldStorename.getText().toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                storeProfielDataBaseReference.child(Utils.restaurantProfileItems.restoAddress).setValue(fieldStoreAddress.getText().toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        storeProfielDataBaseReference.child(Utils.restaurantProfileItems.storeContact).setValue(fieldStoreContact.getText().toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                             storeProfielDataBaseReference.child(Utils.restaurantProfileItems.storeBannerUrl).setValue(bannerDownloadURL).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                 @Override
+                                 public void onSuccess(Void aVoid) {
+                                     storeProfielDataBaseReference.child(Utils.restaurantProfileItems.storeProfileUrl).setValue(iconDownloadURL).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                         @Override
+                                         public void onSuccess(Void aVoid) {
+                                             Intent i = new Intent(UpdateProfile.this, InventoryRestaurant.class);
+                                             startActivity(i);
+                                             finish();
+                                         }
+                                     });
+                                 }
+                             });
+                            }
+                        });
+                    }
+                });
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                setProgress(false);
+            }
+        });
+
+
+    }
+
 }

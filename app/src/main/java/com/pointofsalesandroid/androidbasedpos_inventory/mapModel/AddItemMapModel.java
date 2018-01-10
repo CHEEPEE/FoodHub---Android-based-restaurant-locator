@@ -16,14 +16,15 @@ public class AddItemMapModel {
     public String itemCategory;
     public String itemBannerURL;
     public String itemKey;
-
-    public AddItemMapModel (String name,String code,String price,String category,String bannerUrl,String key){
+    public Boolean itemPublic;
+    public AddItemMapModel (String name,String code,String price,String category,String bannerUrl,String key,Boolean itemPublic){
         this.itemName = name;
         this.itemCode = code;
         this.itemPrice = price;
         this.itemCategory = category;
         this.itemBannerURL = bannerUrl;
         this.itemKey = key;
+        this.itemPublic = itemPublic;
 
     }
     public AddItemMapModel(){
@@ -38,6 +39,7 @@ public class AddItemMapModel {
         result.put("itemCategory",itemCategory);
         result.put("itemBannerURL",itemBannerURL);
         result.put("itemKey",itemKey);
+        result.put("itemPublic",itemPublic);
 
 
         return result;

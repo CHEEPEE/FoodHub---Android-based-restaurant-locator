@@ -143,8 +143,6 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                         finish();
                     }
                 });
-
-
             }
         });
 
@@ -247,8 +245,6 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                 }
             }
         });
-
-
 
     }
 

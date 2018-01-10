@@ -41,6 +41,7 @@ import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.AddItemMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.CategoryMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.RestaurantLocationMapModel;
+import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.VariantItemMapModel;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
@@ -61,7 +62,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
     Spinner itemCategory;
     String Category = "default";
     Context c;
-    Button saveToInven;
+    Button saveToInven,addItemVariant;
     ImageView itemBanner;
     Uri bannerUri;
     RelativeLayout prog;
@@ -71,6 +72,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
     FloatingActionButton addCategory;
     int categoryPosition;
     private static final int READ_REQUEST_CODE = 42;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +92,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
         itemCode = (EditText)findViewById(R.id.fMenuCode);
         itemPrice = (EditText) findViewById(R.id.fitemPrice);
         addCategory = (FloatingActionButton) findViewById(R.id.add_category);
+        addItemVariant = (Button) findViewById(R.id.btnAddVariant);
 
         spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -134,7 +137,6 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
                             @Override
                             public void onInput(MaterialDialog dialog, CharSequence input) {
                                 // Do something
-
                             }
                         }).show();
             }
@@ -150,8 +152,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
                 categoryItemList.add("Choose Category");
                 categoryItemListKey.add("null");
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-
-                    categoryItemList.add(dataSnapshot1.child("restauarantAddress").getValue(String.class).toString());
+                    categoryItemList.add(dataSnapshot1.child("category").getValue(String.class).toString());
                     categoryItemListKey.add(dataSnapshot1.child("key").getValue(String.class).toString());
                     adapter.notifyDataSetChanged();
                 }
@@ -177,6 +178,15 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 performFileSearch();
+            }
+        });
+
+        addItemVariant.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (validateForm(itemName,itemCode,itemPrice)){
+                    uploadItemBannerVariant(bannerUri);
+                }
             }
         });
 
@@ -315,7 +325,33 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
                 }
             });
 
+        }
+    }
+    public void uploadItemBannerVariant(final Uri ImageStorageURI){
+        setProgress(true);
+        if (ImageStorageURI!=null){
+            InputStream storeBannerFile = null;
+            try {
+                storeBannerFile = getContentResolver().openInputStream(ImageStorageURI);
+            }catch (FileNotFoundException e){
+                e.printStackTrace();
+            }
 
+            StorageReference ImagestoreRef = mStorageReference.child("images/"+Utils.restaurantItems+ File.separator+mAuth.getCurrentUser().getUid() + File.separator + getFileName(ImageStorageURI)
+                    +storeBannerFile.toString()+File.separator+getFileName(ImageStorageURI));
+
+            ImagestoreRef.putStream(storeBannerFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    saveItemVariant(itemName.getText().toString(),itemCode.getText().toString(),
+                            itemPrice.getText().toString(),Category,taskSnapshot.getDownloadUrl().toString());
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    setProgress(false);
+                }
+            });
 
         }
     }
@@ -346,7 +382,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
                           String itemCat,String bannerURL){
         String UserId = mAuth.getUid();
         String key = mDatabase.push().getKey();
-        AddItemMapModel addItemMapModel = new AddItemMapModel(itemName,code,price,itemCat,bannerURL,key);
+        AddItemMapModel addItemMapModel = new AddItemMapModel(itemName,code,price,itemCat,bannerURL,key,true);
         Map<String,Object> postValue = addItemMapModel.toMap();
         Map<String,Object> childUpdates = new HashMap<>();
         childUpdates.put(key,postValue);
@@ -367,6 +403,42 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
         });
 
 
+    }
+
+    private void saveItemVariant(final String itemName, final String code, final String price,
+                                 String itemCat, String bannerURL){
+        String UserId = mAuth.getUid();
+        final String key = mDatabase.push().getKey();
+        AddItemMapModel addItemMapModel = new AddItemMapModel(itemName,code,price,itemCat,bannerURL,key,true);
+        Map<String,Object> postValue = addItemMapModel.toMap();
+        final Map<String,Object> childUpdates = new HashMap<>();
+        childUpdates.put(key,postValue);
+        mDatabase.child(Utils.restaurantItems).child(UserId).updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                setProgress(false);
+                VariantItemMapModel variantItemMapModel = new VariantItemMapModel(key,itemName,code,price);
+                Map<String,Object> variantValue = variantItemMapModel.toMap();
+                Map<String,Object> variantChildUpdate = new HashMap<>();
+                variantChildUpdate.put("Regular",variantValue);
+                mDatabase.child(Utils.restaurantItemVariants).child(mAuth.getUid()).child(key).updateChildren(variantChildUpdate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Intent i = new Intent(AddToInventoryRestuarant.this,AddItemVariant.class);
+                        i.putExtra("key",key);
+                        startActivity(i);
+                        Glide.with(getApplicationContext()).pauseRequests();
+                        finish();
+                    }
+                });
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                setProgress(false);
+            }
+        });
     }
 
     public void setProgress(boolean boo){

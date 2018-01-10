@@ -304,6 +304,7 @@ ImageView drawerImgBackground;
                         productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
                         productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
                         productItemGridModel.setItemKey(addItemMapModel.itemKey);
+                        productItemGridModel.setItemPublic(addItemMapModel.itemPublic);
                         arrayItemGrind.add(productItemGridModel);
                         recycleItemProductAdapter.notifyDataSetChanged();
                     }
@@ -315,7 +316,6 @@ ImageView drawerImgBackground;
                 }
             });
         }else {
-
             mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).orderByChild(child).equalTo(category).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -328,6 +328,7 @@ ImageView drawerImgBackground;
                         productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
                         productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
                         productItemGridModel.setItemKey(addItemMapModel.itemKey);
+                        productItemGridModel.setItemPublic(addItemMapModel.itemPublic);
                         arrayItemGrind.add(productItemGridModel);
                         recycleItemProductAdapter.notifyDataSetChanged();
                     }
@@ -339,11 +340,7 @@ ImageView drawerImgBackground;
                 }
             });
         }
-
-
         //*****************8 set ItemList Categroy  ***************************8
-
-
     }
     private void setitemListCategoryAll(){
 
@@ -359,6 +356,7 @@ ImageView drawerImgBackground;
                     productItemGridModel.setItemBannerUrl(addItemMapModel.itemBannerURL);
                     productItemGridModel.setItemPrice(addItemMapModel.itemPrice);
                     productItemGridModel.setItemKey(addItemMapModel.itemKey);
+                    productItemGridModel.setItemPublic(addItemMapModel.itemPublic);
                     arrayItemGrind.add(productItemGridModel);
                     recycleItemProductAdapter.notifyDataSetChanged();
                 }

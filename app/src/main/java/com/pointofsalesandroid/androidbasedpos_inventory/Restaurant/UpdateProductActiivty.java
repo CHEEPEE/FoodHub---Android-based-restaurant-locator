@@ -37,6 +37,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
+import com.pointofsalesandroid.androidbasedpos_inventory.UpdateProfile;
 import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.AddItemMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.CategoryMapModel;
@@ -97,16 +98,19 @@ ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
         mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).child(itemKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                AddItemMapModel addItemMapModel = dataSnapshot.getValue(AddItemMapModel.class);
-                fitemName.setText(addItemMapModel.itemName);
-                fitemPrice.setText(addItemMapModel.itemPrice);
-                fitemCode.setText(addItemMapModel.itemCode);
-                imgBannerURL = Uri.parse(addItemMapModel.itemBannerURL);
-                setImage(Uri.parse(addItemMapModel.itemBannerURL),bannerImage);
-                setSpinner(addItemMapModel.itemCategory);
-                previewsBannerUrl = Uri.parse(addItemMapModel.itemBannerURL);
-                OldBannerUrl = Uri.parse(addItemMapModel.itemBannerURL);
-
+                if (dataSnapshot.getValue()!=null) {
+                    AddItemMapModel addItemMapModel = dataSnapshot.getValue(AddItemMapModel.class);
+                    fitemName.setText(addItemMapModel.itemName);
+                    fitemPrice.setText(addItemMapModel.itemPrice);
+                    fitemCode.setText(addItemMapModel.itemCode);
+                    imgBannerURL = Uri.parse(addItemMapModel.itemBannerURL);
+                    setImage(Uri.parse(addItemMapModel.itemBannerURL), bannerImage);
+                    setSpinner(addItemMapModel.itemCategory);
+                    previewsBannerUrl = Uri.parse(addItemMapModel.itemBannerURL);
+                    OldBannerUrl = Uri.parse(addItemMapModel.itemBannerURL);
+                }else {
+                    Utils.toster(UpdateProductActiivty.this,"Please Chech Internet Connection");
+                }
             }
 
             @Override
@@ -124,12 +128,18 @@ ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
                 categoryItemList.clear();
                 categoryItemList.add("Choose Category");
                 categoryItemListKey.add("null");
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    categoryItemList.add(dataSnapshot1.child("restauarantAddress").getValue(String.class).toString());
-                    categoryItemListKey.add(dataSnapshot1.child("key").getValue(String.class).toString());
-                    adapter.notifyDataSetChanged();
-
+                try {
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                        categoryItemList.add(dataSnapshot1.child("category").getValue(String.class).toString());
+                        categoryItemListKey.add(dataSnapshot1.child("key").getValue(String.class).toString());
+                        adapter.notifyDataSetChanged();
+                    }
+                }catch (NullPointerException e ){
+                    Utils.toster(c,"Please Check Internet Connection");
                 }
+
+
+
 
             }
 
@@ -420,7 +430,7 @@ ArrayList<ProductItemGridModel> arrayProductItem = new ArrayList<>();
                           String itemCat,String bannerURL){
         String UserId = mAuth.getUid();
         String key = itemKey;
-        AddItemMapModel addItemMapModel = new AddItemMapModel(itemName,code,price,itemCat,bannerURL,key);
+        AddItemMapModel addItemMapModel = new AddItemMapModel(itemName,code,price,itemCat,bannerURL,key,true);
         Map<String,Object> postValue = addItemMapModel.toMap();
         Map<String,Object> childUpdates = new HashMap<>();
         childUpdates.put(key,postValue);

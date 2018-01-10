@@ -11,9 +11,13 @@ public class ProductItemGridModel {
     private String itemBannerUrl;
     private String itemKey;
     private String itemCode;
+    private Boolean itemPublic;
 
     public String getItemCode(){
         return itemCode;
+    }
+    public boolean getItemPublic(){
+        return itemPublic;
     }
 
     public String getiName(){
@@ -48,6 +52,10 @@ public class ProductItemGridModel {
     }
     public void setItemCode(String code){
         this.itemCode = code;
+    }
+
+    public void setItemPublic(Boolean publicize){
+        this.itemPublic = publicize;
     }
 
 }

@@ -71,6 +71,7 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
     private ImageView confirmLocation;
     private DatabaseReference mDataBase;
     private FirebaseAuth mAuth;
+    private LatLng restoLocation;
     private ArrayList<RestaurantLocationModel> restaurantLocationModels = new ArrayList<>();
 
 
@@ -115,6 +116,8 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                     restaurantLocationModels.add(restaurantLocationModel);
                     restoLocationLatitude = restaurantLocationMapModel.locationLatitude;
                     restoLocationLongitude = restaurantLocationMapModel.locationLongitude;
+                    restoLocation = new LatLng(restaurantLocationMapModel.locationLatitude,restaurantLocationMapModel.locationLongitude);
+                    getRestaurantCurrentLocation();
                     setLocation();
                 }else {
                     getDeviceLocation();
@@ -166,14 +169,42 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
       /*  LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
+
+
         updateLocationUI();
+
+        if (restoLocation!=null){
+            getRestaurantCurrentLocation();
+        }else {
+            mDataBase.child(Utils.restaurantLocation).child(mAuth.getCurrentUser().getUid()).child("locationLatitude").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    restoLocationLatitude = dataSnapshot.getValue(Double.class);
+                    mDataBase.child(Utils.restaurantLocation).child(mAuth.getCurrentUser().getUid()).child("locationLongitude").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            restoLocationLongitude = dataSnapshot.getValue(Double.class);
+                            getRestaurantCurrentLocation();
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+
 
         mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
             public void onMarkerDragStart(Marker arg0) {
                 // TODO Auto-generated method stub
-
-
             }
 
             @SuppressWarnings("unchecked")
@@ -346,7 +377,6 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                                 } else {
                                     Log.d(TAG, "Current location is null. Using defaults.");
                                     Log.e(TAG, "Exception: %s", task.getException());
-
                                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
                                     mMap.getUiSettings().setMyLocationButtonEnabled(false);
                                 }
@@ -389,7 +419,6 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                 LatLng latLng = null;
                     latLng =  new LatLng(restoLocationLatitude,restoLocationLongitude);
 
-
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                         new LatLng(latLng.latitude,latLng.longitude), DEFAULT_ZOOM));
 
@@ -424,6 +453,11 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
         } catch(SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
         }
+    }
+
+    private void getRestaurantCurrentLocation(){
+        mMap.addMarker(new MarkerOptions().position(restoLocation));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(restoLocation, DEFAULT_ZOOM));
     }
 
 

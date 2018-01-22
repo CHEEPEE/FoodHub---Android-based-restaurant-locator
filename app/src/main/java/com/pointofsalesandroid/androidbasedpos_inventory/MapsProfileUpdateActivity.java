@@ -1,5 +1,6 @@
 package com.pointofsalesandroid.androidbasedpos_inventory;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -179,18 +180,24 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
             mDataBase.child(Utils.restaurantLocation).child(mAuth.getCurrentUser().getUid()).child("locationLatitude").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    restoLocationLatitude = dataSnapshot.getValue(Double.class);
-                    mDataBase.child(Utils.restaurantLocation).child(mAuth.getCurrentUser().getUid()).child("locationLongitude").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            restoLocationLongitude = dataSnapshot.getValue(Double.class);
-                            getRestaurantCurrentLocation();
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                    if (dataSnapshot.getValue(Double.class)!=null){
+                        restoLocationLatitude = dataSnapshot.getValue(Double.class);
+                        mDataBase.child(Utils.restaurantLocation).child(mAuth.getCurrentUser().getUid()).child("locationLongitude").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                restoLocationLongitude = dataSnapshot.getValue(Double.class);
+                                getRestaurantCurrentLocation();
+                            }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
 
-                        }
-                    });
+                            }
+                        });
+                    }
+                    else {
+                        getDeviceLocation();
+                    }
+
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
@@ -355,6 +362,7 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                                         Geocoder geo = new Geocoder(MapsProfileUpdateActivity.this, Locale.getDefault());
                                         List<Address> addresses = geo.getFromLocation(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), 1);
                                         if (addresses.isEmpty()) {
+
                                          //   Log.i("System out", "onMarkerDragEnd... waiting for location name"+arg0.getPosition().latitude+"..."+arg0.getPosition().longitude);
                                         }
                                         else {
@@ -363,7 +371,8 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                              /*  Log.i("Location",addresses.get(i).getAddressLine(0)+", "+addresses.get(i).getFeatureName() + ", " + addresses.get(i).getLocality() +", " + addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getFeatureName() + ", " + addresses.get(i).getCountryName());*/
                                                     Log.i("Location",addresses.get(i).getLocality()+", "+addresses.get(i).getSubAdminArea()+", "+addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getCountryName());
                                                     lblLocation.setText(addresses.get(i).getLocality()+", "+addresses.get(i).getSubAdminArea()+", "+addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getCountryName());
-
+                                                    restoLocationLatitude = mLastKnownLocation.getLatitude();
+                                                    restoLocationLongitude = mLastKnownLocation.getLongitude();
                                                 }
                                             }
                                         }
@@ -406,7 +415,7 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 mLastKnownLocation = null;
-                getLocationPermission();
+
             }
         } catch (SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
@@ -460,5 +469,9 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(restoLocation, DEFAULT_ZOOM));
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

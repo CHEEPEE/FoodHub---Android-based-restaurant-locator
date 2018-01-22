@@ -76,7 +76,6 @@ public class UpdateProfile extends AppCompatActivity {
     AVLoadingIndicatorView savingProgress;
     RelativeLayout progBlocker;
     private Location mLastKnownLocation;
-
     private boolean value;
     private StorageReference mStorageRef;
     @Override
@@ -84,7 +83,6 @@ public class UpdateProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_management);
         submitInformation = (Button) findViewById(R.id.submitInformation);
-
 
         mAuth = FirebaseAuth.getInstance();
         progBlocker = (RelativeLayout) findViewById(R.id.prog);
@@ -129,7 +127,6 @@ public class UpdateProfile extends AppCompatActivity {
                 iconDownloadURL = storeProfileInformationMap.storeProfileUrl;
                 bannerUri =Uri.parse(storeProfileInformationMap.storeBannerUrl);
                 iconUri = Uri.parse(storeProfileInformationMap.storeProfileUrl);
-
                 fieldStorename.setText(storeProfileInformationMap.storeName);
                 fieldStoreContact.setText(storeProfileInformationMap.storeContact);
             }
@@ -403,6 +400,14 @@ public class UpdateProfile extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(UpdateProfile.this,InventoryRestaurant.class);
+        startActivity(i);
+        finish();
+    }
+
     private void updateRestoCredentials(){
       final DatabaseReference storeProfielDataBaseReference = mDatabase.child(Utils.storeProfiles).child(mAuth.getUid());
 
@@ -432,7 +437,6 @@ public class UpdateProfile extends AppCompatActivity {
                         });
                     }
                 });
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -440,8 +444,6 @@ public class UpdateProfile extends AppCompatActivity {
                 setProgress(false);
             }
         });
-
-
     }
 
 }

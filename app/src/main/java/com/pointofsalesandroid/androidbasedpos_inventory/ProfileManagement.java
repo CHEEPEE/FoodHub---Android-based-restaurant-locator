@@ -103,6 +103,16 @@ public class ProfileManagement extends AppCompatActivity {
 
             }
         });
+        mDatabase.child(Utils.restaurantLocation).child(mAuth.getUid()).child("restauarantAddress").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                fieldStoreAddress.setText(dataSnapshot.getValue(String.class));
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         StoreBanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

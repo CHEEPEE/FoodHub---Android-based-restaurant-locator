@@ -82,12 +82,6 @@ public class LogInActivity extends AppCompatActivity {
     // ************************************** Facebook Log In  ***************************************************
 
 
-
-
-
-
-    // ************************************** Google Sign In *****************************************************
-
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -116,7 +110,6 @@ public class LogInActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -158,7 +151,6 @@ public class LogInActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             setProgress(false);
                         }
-
                     }
                 });
     }

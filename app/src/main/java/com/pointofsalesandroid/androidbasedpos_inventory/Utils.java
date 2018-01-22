@@ -25,7 +25,6 @@ public static class productItems{
     public static String itemKey = "itemKey";
     public static String itemPublic = "itemPublic";
 }
-
 public static class restaurantProfileItems{
     public static String restoName  = "storeName";
     public static String restoAddress = "storeAddress";

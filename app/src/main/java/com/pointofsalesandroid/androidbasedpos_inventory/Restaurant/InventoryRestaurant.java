@@ -157,8 +157,6 @@ ImageView drawerImgBackground;
         categoryList.setLayoutManager(layoutManager);
         categoryList.setAdapter(recycleItemCategoryAdapter);
         recycleItemCategoryAdapter.notifyDataSetChanged();
-
-
         //************** Category Filter Off ************
         CategoryModel catMode = new CategoryModel();
         catMode.setCategory("All");

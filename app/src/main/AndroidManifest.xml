@@ -22,7 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LogInActivity"
+            android:name=".activity.LogInActivity"
             android:theme="@style/AppThemeNoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -58,13 +58,16 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsProfileUpdateActivity"
+            android:name=".activity.MapsProfileUpdateActivity"
             android:label="@string/title_activity_maps_profile_update">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.UpdateProductActiivty" />
         </activity>
-        <activity android:name=".Restaurant.AddItemVariant"></activity>
+        <activity android:name=".Restaurant.AddItemVariant" />
+        <activity android:name=".activity.ChatActivity"
+            android:theme="@style/AppThemeNoActionBar"
+            ></activity>
     </application>
 
 </manifest>

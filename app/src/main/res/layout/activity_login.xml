@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/login_parent_layout"
     android:background="@color/colorAccent"
-    tools:context="com.pointofsalesandroid.androidbasedpos_inventory.LogInActivity">
+    tools:context="com.pointofsalesandroid.androidbasedpos_inventory.activity.LogInActivity">
 
     <TextView
         android:id="@+id/textView"

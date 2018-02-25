@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
-import android.media.Image;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
@@ -37,6 +36,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.InventoryRestaurant;
+import com.pointofsalesandroid.androidbasedpos_inventory.activity.MapsProfileUpdateActivity;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.StoreProfileInformationMap;
 import com.wang.avi.AVLoadingIndicatorView;
 

@@ -25,8 +25,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,7 +32,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.pointofsalesandroid.androidbasedpos_inventory.LogInActivity;
+import com.pointofsalesandroid.androidbasedpos_inventory.activity.ChatActivity;
+import com.pointofsalesandroid.androidbasedpos_inventory.activity.LogInActivity;
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
 import com.pointofsalesandroid.androidbasedpos_inventory.UpdateProfile;
 import com.pointofsalesandroid.androidbasedpos_inventory.Utils;
@@ -43,7 +42,6 @@ import com.pointofsalesandroid.androidbasedpos_inventory.adapter.RecycleItemCate
 import com.pointofsalesandroid.androidbasedpos_inventory.adapter.RecycleItemProductAdapter;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.AddItemMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.CategoryMapModel;
-import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.RestaurantLocationMapModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.mapModel.StoreProfileInformationMap;
 import com.pointofsalesandroid.androidbasedpos_inventory.models.CategoryModel;
 import com.pointofsalesandroid.androidbasedpos_inventory.models.ProductItemGridModel;
@@ -61,7 +59,7 @@ public class InventoryRestaurant extends AppCompatActivity {
 FloatingActionButton addProducts;
 Toolbar inventoryToolbar;
 FirebaseAuth mAuth;
-TextView menuSingOut,accountSettings;
+TextView menuSingOut,accountSettings,messages;
 TextView StoreN,addCategory;
 RecyclerView categoryList,itemList;
 ArrayList<ProductItemGridModel> arrayItemGrind = new ArrayList<>();
@@ -141,6 +139,7 @@ ImageView drawerImgBackground;
         addCategory = (TextView) findViewById(R.id.addCategory);
         accountSettings = (TextView) findViewById(R.id.accountSettings);
         drawerImgBackground = (ImageView) findViewById(R.id.drawerImgBackground);
+        messages = (TextView) findViewById(R.id.messages);
 
 
 
@@ -195,6 +194,7 @@ ImageView drawerImgBackground;
                 Intent i = new Intent(InventoryRestaurant.this, LogInActivity.class);
                 startActivity(i);
                 finish();
+
             }
         });
 
@@ -227,6 +227,16 @@ ImageView drawerImgBackground;
 
                             }
                         }).show();
+
+            }
+        });
+
+        messages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i =  new Intent(InventoryRestaurant.this, ChatActivity.class);
+                startActivity(i);
+                finish();
 
             }
         });

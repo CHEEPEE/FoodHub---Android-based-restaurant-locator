@@ -1,4 +1,4 @@
-package com.pointofsalesandroid.androidbasedpos_inventory;
+package com.pointofsalesandroid.androidbasedpos_inventory.activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -29,6 +28,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pointofsalesandroid.androidbasedpos_inventory.ProfileManagement;
+import com.pointofsalesandroid.androidbasedpos_inventory.R;
 import com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.InventoryRestaurant;
 import com.wang.avi.AVLoadingIndicatorView;
 

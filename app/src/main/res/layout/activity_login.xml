@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/login_parent_layout"
-    android:background="@color/colorAccent"
+    android:background="#000"
     tools:context="com.pointofsalesandroid.androidbasedpos_inventory.activity.LogInActivity">
 
     <TextView
@@ -16,23 +16,22 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/app_name"
-        android:textAllCaps="true"
+        android:textAllCaps="false"
         android:textColor="@color/colorWhite"
-        android:typeface="serif"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Logo" />
 
     <Button
         android:id="@+id/Logo"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="400dp"
+        android:layout_height="150dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/buttonloginbg"
-        android:text="POS"
+        android:background="@drawable/foodhub_logo"
         android:textAllCaps="false"
         android:textColor="@color/colorWhite"
         android:textSize="30dp"

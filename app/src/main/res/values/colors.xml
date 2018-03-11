@@ -11,4 +11,5 @@
     <color name="colorTeal">#263238</color>
     <color name="drawerCOlor">#c7000000</color>
     <color name="transparent">#00ffffff</color>
+    <color name="colorBlack">#000</color>
 </resources>

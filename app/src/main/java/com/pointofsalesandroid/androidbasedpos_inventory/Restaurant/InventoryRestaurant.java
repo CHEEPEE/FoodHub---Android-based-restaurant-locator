@@ -236,7 +236,6 @@ ImageView drawerImgBackground;
             public void onClick(View v) {
                 Intent i =  new Intent(InventoryRestaurant.this, ChatActivity.class);
                 startActivity(i);
-                finish();
 
             }
         });

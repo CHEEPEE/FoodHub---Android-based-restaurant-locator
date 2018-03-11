@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:id="@+id/bubbleParentConstrain"
     android:layout_height="wrap_content">
@@ -10,7 +11,6 @@
         android:id="@+id/chatBubbleUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/rating_background"
@@ -20,17 +20,36 @@
         android:paddingTop="5dp"
         android:text="Test"
         android:textColor="@color/colorWhite"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/otherTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="10:00 pm"
+        android:textSize="8sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/chatBubbleOther"
+        app:layout_constraintTop_toBottomOf="@+id/chatBubbleOther" />
+
+    <TextView
+        android:id="@+id/userTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="10:00 pm"
+        android:textSize="8sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/chatBubbleUser"
+        app:layout_constraintTop_toBottomOf="@+id/chatBubbleUser" />
 
     <TextView
         android:id="@+id/chatBubbleOther"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:background="@drawable/rating_background"
         android:paddingBottom="5dp"
         android:paddingLeft="8dp"
@@ -38,7 +57,6 @@
         android:paddingTop="5dp"
         android:text="Test"
         android:textColor="@color/colorWhite"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:layout_editor_absoluteY="10dp" />
 </android.support.constraint.ConstraintLayout>

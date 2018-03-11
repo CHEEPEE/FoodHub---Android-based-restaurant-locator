@@ -22,6 +22,20 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item tools:targetApi = "19" name="android:windowTranslucentStatus">true</item>
     </style>
+    <style name="CustomActionBarLogIn" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item tools:targetApi = "19" name="android:windowTranslucentStatus">true</item>
+        <item xmlns:tools="http://schemas.android.com/tools" name="android:statusBarColor" tools:targetAPI="21">
+            @color/colorBlack
+        </item>
+        <item xmlns:tools="http://schemas.android.com/tools" name="android:navigationBarColor" tools:targetAPI="21">
+            @color/colorBlack
+        </item>
+    </style>
+
     <style name="AppThemeNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -32,4 +46,6 @@
         <item name="android:width">50dp</item>
         <item name="android:height">50dp</item>
     </style>
+
+
 </resources>

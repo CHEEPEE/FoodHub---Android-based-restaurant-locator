@@ -145,6 +145,9 @@ public class ChatActivity extends AppCompatActivity {
             ChatMapmodel chatMapmodel = dataSnapshot.getValue(ChatMapmodel.class);
             chatDataModel.setMessage(chatMapmodel.message);
             chatDataModel.setUserID(chatMapmodel.userID);
+            chatDataModel.setMsgkey(chatMapmodel.msgkey);
+            chatDataModel.setUsername(chatMapmodel.username);
+            chatDataModel.setTimestamp(chatMapmodel.timestamp);
             messageDataModelsArrayList.add(chatDataModel);
             messageRecycleAdapter.notifyDataSetChanged();
             slidingRootNav.closeMenu();

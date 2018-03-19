@@ -59,7 +59,10 @@ dependencies {
     //picasso
     compile 'com.squareup.picasso:picasso:2.5.2'
 
+    compile 'io.nlopez.smartlocation:library:3.3.3'
+
 }
+
 
 
 

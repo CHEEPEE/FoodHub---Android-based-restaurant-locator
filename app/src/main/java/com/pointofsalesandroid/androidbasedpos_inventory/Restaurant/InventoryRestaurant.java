@@ -38,6 +38,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.pointofsalesandroid.androidbasedpos_inventory.ReportsActivity;
 import com.pointofsalesandroid.androidbasedpos_inventory.activity.ChatActivity;
 import com.pointofsalesandroid.androidbasedpos_inventory.activity.LogInActivity;
 import com.pointofsalesandroid.androidbasedpos_inventory.R;
@@ -66,7 +67,7 @@ FloatingActionButton addProducts;
 Toolbar inventoryToolbar;
 FirebaseAuth mAuth;
 TextView menuSingOut,accountSettings,messages;
-TextView StoreN,addCategory;
+TextView StoreN,addCategory,stat_report;
 RecyclerView categoryList,itemList;
 ArrayList<ProductItemGridModel> arrayItemGrind = new ArrayList<>();
 DatabaseReference mDatabase;
@@ -132,6 +133,14 @@ ImageView drawerImgBackground;
             //code for landscape mode
             gridLayoutManager = new GridLayoutManager(c,3);
         }
+        stat_report = (TextView) findViewById(R.id.stat_report);
+        stat_report.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(InventoryRestaurant.this, ReportsActivity.class);
+                startActivity(i);
+            }
+        });
         recycleItemProductAdapter = new RecycleItemProductAdapter(c,arrayItemGrind);
         storeIcon = (CircleImageView) findViewById(R.id.storeIcon);
 

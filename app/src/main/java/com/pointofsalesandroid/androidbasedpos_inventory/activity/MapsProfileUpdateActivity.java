@@ -1,6 +1,7 @@
 package com.pointofsalesandroid.androidbasedpos_inventory.activity;
 
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -26,6 +27,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,6 +50,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import io.nlopez.smartlocation.OnLocationUpdatedListener;
+import io.nlopez.smartlocation.SmartLocation;
 
 public class MapsProfileUpdateActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = MapsProfileUpdateActivity.class.getSimpleName();
@@ -334,7 +339,47 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
      * Get the best and most recent location of the device, which may be null in rare
      * cases when a location is not available.
      */
-        try {
+
+    if (mLocationPermissionGranted){
+        SmartLocation.with(MapsProfileUpdateActivity.this).location().start(new OnLocationUpdatedListener() {
+            @Override
+            public void onLocationUpdated(Location location) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(location.getLatitude(),
+                                location.getLongitude()), DEFAULT_ZOOM));
+
+                marker= mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),location.getLongitude())).title("Your Current Location"));
+                marker.setDraggable(true);
+
+                try {
+
+                    Geocoder geo = new Geocoder(MapsProfileUpdateActivity.this, Locale.getDefault());
+                    List<Address> addresses = geo.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    if (addresses.isEmpty()) {
+
+                        //   Log.i("System out", "onMarkerDragEnd... waiting for location name"+arg0.getPosition().latitude+"..."+arg0.getPosition().longitude);
+                    }
+                    else {
+                        if (addresses.size() > 0) {
+                            for (int i = 0;i<addresses.size();i++){
+                             /*  Log.i("Location",addresses.get(i).getAddressLine(0)+", "+addresses.get(i).getFeatureName() + ", " + addresses.get(i).getLocality() +", " + addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getFeatureName() + ", " + addresses.get(i).getCountryName());*/
+                                Log.i("Location",addresses.get(i).getLocality()+", "+addresses.get(i).getSubAdminArea()+", "+addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getCountryName());
+                                lblLocation.setText(addresses.get(i).getLocality()+", "+addresses.get(i).getSubAdminArea()+", "+addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getCountryName());
+                                restoLocationLatitude = location.getLatitude();
+                                restoLocationLongitude = location.getLongitude();
+                            }
+                        }
+                    }
+                }catch (IOException e){
+                    Log.i("System out error", e.toString());
+                    Utils.toster(MapsProfileUpdateActivity.this,"Please Check Internet Connection");
+
+                }
+
+            }
+        });
+    }
+/*        try {
             if (mLocationPermissionGranted) {
                 Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
@@ -368,7 +413,7 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
                                         else {
                                             if (addresses.size() > 0) {
                                                 for (int i = 0;i<addresses.size();i++){
-                             /*  Log.i("Location",addresses.get(i).getAddressLine(0)+", "+addresses.get(i).getFeatureName() + ", " + addresses.get(i).getLocality() +", " + addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getFeatureName() + ", " + addresses.get(i).getCountryName());*/
+                             *//*  Log.i("Location",addresses.get(i).getAddressLine(0)+", "+addresses.get(i).getFeatureName() + ", " + addresses.get(i).getLocality() +", " + addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getFeatureName() + ", " + addresses.get(i).getCountryName());*//*
                                                     Log.i("Location",addresses.get(i).getLocality()+", "+addresses.get(i).getSubAdminArea()+", "+addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getCountryName());
                                                     lblLocation.setText(addresses.get(i).getLocality()+", "+addresses.get(i).getSubAdminArea()+", "+addresses.get(i).getAdminArea()+ ", " + addresses.get(i).getCountryName());
                                                     restoLocationLatitude = mLastKnownLocation.getLatitude();
@@ -400,7 +445,7 @@ public class MapsProfileUpdateActivity extends FragmentActivity implements OnMap
             }
         } catch(SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
-        }
+        }*/
     }
 
     private void updateLocationUI() {

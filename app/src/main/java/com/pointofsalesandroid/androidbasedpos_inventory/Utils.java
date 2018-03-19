@@ -22,6 +22,7 @@ public static String chattingSystem = "chattingSystem";
 public static String chatsList = "chatLists";
 public static String restaurantLocation = "restaurantLocation";
 public static String restaurantItemVariants = "restaurantItemVariants";
+public static String restaurantMenusUserRating = "restuarantMenusUserRating";
 public static String storeProfiles = "storeProfiles";
 public static String chatUserList = "chatUserList";
 public static String testImageUrl ="https://firebasestorage.googleapis.com/v0/b/android-based-pos.appspot.com/o/images%2FrestaurantItems%2FBcUYltmzioggwtH0SCUYlKP9XWr2%2FIMG_20171127_222809.jpgandroid.os.ParcelFileDescriptor%24AutoCloseInputStream%40d2eb373%2FIMG_20171127_222809.jpg?alt=media&token=f3133eed-a3fc-4a66-9b11-8a827a23e1f5";

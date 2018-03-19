@@ -65,9 +65,10 @@
                 android:value="com.pointofsalesandroid.androidbasedpos_inventory.Restaurant.UpdateProductActiivty" />
         </activity>
         <activity android:name=".Restaurant.AddItemVariant" />
-        <activity android:name=".activity.ChatActivity"
-            android:theme="@style/AppThemeNoActionBar"
-            ></activity>
+        <activity
+            android:name=".activity.ChatActivity"
+            android:theme="@style/AppThemeNoActionBar" />
+        <activity android:name=".ReportsActivity"></activity>
     </application>
 
 </manifest>

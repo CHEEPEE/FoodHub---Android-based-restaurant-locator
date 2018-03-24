@@ -1,5 +1,6 @@
 package com.pointofsalesandroid.androidbasedpos_inventory.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -47,6 +48,7 @@ public class ChatActivity extends AppCompatActivity {
     Button btnSubmit;
     EditText inputMsg;
     String ofTheUserClicked;
+    String profileUrl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,13 +62,14 @@ public class ChatActivity extends AppCompatActivity {
         chatListRecycleView.setAdapter(messageRecycleAdapter);
         btnSubmit = (Button) findViewById(R.id.btnSend);
         inputMsg = (EditText) findViewById(R.id.inputmsg);
+        profileUrl = getIntent().getExtras().getString("storeIcon");
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String key = mDatabase.push().getKey();
 
                 ChatMapmodel messageMapmodel = new ChatMapmodel(key
-                        ,inputMsg.getText().toString(),Utils.getDateToStrig(),mAuth.getCurrentUser().getDisplayName(),mAuth.getUid());
+                        ,inputMsg.getText().toString(),Utils.getDateToStrig(),mAuth.getCurrentUser().getDisplayName(),mAuth.getUid(),profileUrl);
                 Map<String,Object> chatMsgValue = messageMapmodel.toMap();
                 Map<String,Object> childUpdates = new HashMap<>();
                 childUpdates.put(key,chatMsgValue);
@@ -124,13 +127,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
-
-
-
     }
 
     private void chatGetConvo(final String userId){
@@ -148,12 +144,11 @@ public class ChatActivity extends AppCompatActivity {
             chatDataModel.setMsgkey(chatMapmodel.msgkey);
             chatDataModel.setUsername(chatMapmodel.username);
             chatDataModel.setTimestamp(chatMapmodel.timestamp);
+            chatDataModel.setUserImg(chatMapmodel.userImg);
             messageDataModelsArrayList.add(chatDataModel);
             messageRecycleAdapter.notifyDataSetChanged();
             slidingRootNav.closeMenu();
-
-
-
+            chatListRecycleView.scrollToPosition(messageDataModelsArrayList.size()-1);
 
             }
 

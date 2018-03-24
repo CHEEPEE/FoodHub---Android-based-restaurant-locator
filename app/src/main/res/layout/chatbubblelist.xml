@@ -7,10 +7,36 @@
     android:id="@+id/bubbleParentConstrain"
     android:layout_height="wrap_content">
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/userImgOther"
+        android:layout_width="40sp"
+        android:layout_height="40sp"
+        android:layout_marginBottom="8dp"
+
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/image_placeholder"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/userImgUsers"
+        android:layout_width="40sp"
+        android:layout_height="40sp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/image_placeholder"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/chatBubbleUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/rating_background"
@@ -20,8 +46,9 @@
         android:paddingTop="5dp"
         android:text="Test"
         android:textColor="@color/colorWhite"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/userImgUsers"
+        app:layout_constraintEnd_toStartOf="@+id/userImgUsers"
+        app:layout_constraintTop_toTopOf="@+id/userImgUsers" />
 
     <TextView
         android:id="@+id/otherTimestamp"
@@ -49,7 +76,9 @@
         android:id="@+id/chatBubbleOther"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/rating_background"
         android:paddingBottom="5dp"
         android:paddingLeft="8dp"
@@ -57,6 +86,7 @@
         android:paddingTop="5dp"
         android:text="Test"
         android:textColor="@color/colorWhite"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="10dp" />
+        app:layout_constraintBottom_toBottomOf="@+id/userImgOther"
+        app:layout_constraintStart_toEndOf="@+id/userImgOther"
+        app:layout_constraintTop_toTopOf="@+id/userImgOther" />
 </android.support.constraint.ConstraintLayout>

@@ -16,6 +16,8 @@ import com.pointofsalesandroid.androidbasedpos_inventory.models.ChatDataModel;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by Keji's Lab on 26/12/2017.
  */
@@ -32,9 +34,12 @@ public class MessageRecycleAdapter extends RecyclerView.Adapter<MessageRecycleAd
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
       public TextView chatBubbleUser,chatBubbleOther,userTimeStamp,otherTimeStamp;
+      public CircleImageView imgIconUser,imgIconOther;
 
         public MyViewHolder(View view){
             super(view);
+            imgIconOther = (CircleImageView) view.findViewById(R.id.userImgOther);
+            imgIconUser = (CircleImageView) view.findViewById(R.id.userImgUsers);
             userTimeStamp = (TextView) view.findViewById(R.id.userTimestamp);
             otherTimeStamp = (TextView) view.findViewById(R.id.otherTimestamp);
             chatBubbleUser = (TextView) view.findViewById(R.id.chatBubbleUser);
@@ -65,22 +70,34 @@ public class MessageRecycleAdapter extends RecyclerView.Adapter<MessageRecycleAd
         if (!messageDataModel.getUserID().equals(FirebaseAuth.getInstance().getUid())){
             holder.chatBubbleOther.setVisibility(View.VISIBLE);
             holder.otherTimeStamp.setVisibility(View.VISIBLE);
+            holder.imgIconOther.setVisibility(View.VISIBLE);
             holder.chatBubbleOther.setText(messageDataModel.getMessage());
             holder.otherTimeStamp.setText(messageDataModel.getTimestamp());
             //set invisible
+            holder.imgIconUser.setVisibility(View.INVISIBLE);
             holder.userTimeStamp.setVisibility(View.INVISIBLE);
             holder.chatBubbleUser.setVisibility(View.INVISIBLE);
+            GlideApp.with(context).load(messageDataModel.getUserImg()).placeholder(R.drawable.image_placeholder).centerCrop().into(holder.imgIconOther);
+
+            try {
+
+            }catch (NullPointerException e){
+                System.out.println(e);
+            }
 
         }else {
+            holder.imgIconUser.setVisibility(View.VISIBLE);
             holder.chatBubbleUser.setVisibility(View.VISIBLE);
             holder.userTimeStamp.setVisibility(View.VISIBLE);
             holder.chatBubbleUser.setText(messageDataModel.getMessage());
             holder.userTimeStamp.setText(messageDataModel.getTimestamp());
             //set invisible
+            holder.imgIconOther.setVisibility(View.INVISIBLE);
             holder.chatBubbleOther.setVisibility(View.INVISIBLE);
             holder.otherTimeStamp.setVisibility(View.INVISIBLE);
 
         }
+
 
 
     }

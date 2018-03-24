@@ -26,7 +26,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Menu Name"
-
         app:layout_constraintStart_toEndOf="@+id/ic_menu"
         app:layout_constraintTop_toTopOf="@+id/ic_menu" />
 
@@ -38,5 +37,15 @@
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="@+id/menu_name"
         app:layout_constraintTop_toBottomOf="@+id/menu_name" />
+
+    <TextView
+        android:id="@+id/rating_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="3"
+        app:layout_constraintBottom_toBottomOf="@+id/menu_name"
+        app:layout_constraintStart_toEndOf="@+id/menu_name"
+        app:layout_constraintTop_toTopOf="@+id/menu_name" />
 
 </android.support.constraint.ConstraintLayout>

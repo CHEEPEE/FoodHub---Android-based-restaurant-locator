@@ -2,6 +2,7 @@ package com.pointofsalesandroid.androidbasedpos_inventory;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -33,7 +34,7 @@ public class ReportsActivity extends AppCompatActivity {
 
         reportRestaurantMenusAdapter = new ReportRestaurantMenusAdapter(ReportsActivity.this,productItemGridModelArrayList);
         restaurantMenuList = (RecyclerView) findViewById(R.id.restaurant_menus_list_reports);
-        restaurantMenuList.setLayoutManager(new LinearLayoutManager(ReportsActivity.this));
+        restaurantMenuList.setLayoutManager(new GridLayoutManager(ReportsActivity.this,2));
         restaurantMenuList.setAdapter(reportRestaurantMenusAdapter);
 
         mDatabase.child(Utils.restaurantItems).child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {

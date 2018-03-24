@@ -68,7 +68,9 @@
         <activity
             android:name=".activity.ChatActivity"
             android:theme="@style/AppThemeNoActionBar" />
-        <activity android:name=".ReportsActivity"></activity>
+        <activity android:name=".ReportsActivity"
+            android:theme="@style/AppThemeNoActionBar"
+            ></activity>
     </application>
 
 </manifest>

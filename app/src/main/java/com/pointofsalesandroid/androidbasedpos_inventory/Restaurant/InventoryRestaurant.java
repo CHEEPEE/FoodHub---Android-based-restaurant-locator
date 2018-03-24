@@ -249,6 +249,7 @@ ImageView drawerImgBackground;
             @Override
             public void onClick(View v) {
                 Intent i =  new Intent(InventoryRestaurant.this, ChatActivity.class);
+                i.putExtra("storeIcon",ArrayStoreProfile.get(0).getStoreProfileUrl());
                 startActivity(i);
 
             }

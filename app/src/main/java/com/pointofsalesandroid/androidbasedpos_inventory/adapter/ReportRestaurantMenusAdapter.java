@@ -34,14 +34,15 @@ public class ReportRestaurantMenusAdapter extends RecyclerView.Adapter<ReportRes
     public class MyViewHolder extends RecyclerView.ViewHolder{
         RatingBar menusRatingbar;
         CircleImageView itemIcon;
+        TextView ratingNUmber ;
 
         TextView menuName;
         public MyViewHolder(View view){
             super(view);
+            ratingNUmber = (TextView) view.findViewById(R.id.rating_number);
             itemIcon = (CircleImageView) view.findViewById(R.id.ic_menu);
             menuName = (TextView) view.findViewById(R.id.menu_name);
             menusRatingbar = (RatingBar) view.findViewById(R.id.rating_bar_item);
-
         }
     }
 
@@ -67,16 +68,18 @@ public class ReportRestaurantMenusAdapter extends RecyclerView.Adapter<ReportRes
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int ratingTotal = 0;
+                int ratingNum =0;
                 ArrayList<Float> ratingArray  = new ArrayList<>();
                 for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                     RestaurantMenuRatingMapModel restaurantMenuRatingMapModel = dataSnapshot1.getValue(RestaurantMenuRatingMapModel.class);
                     ratingArray.add(restaurantMenuRatingMapModel.userRating);
 
+
                 }
                 for (int i = 0;i<ratingArray.size();i++){
                     ratingTotal += ratingArray.get(i);
-
                 }
+                holder.ratingNUmber.setText(ratingArray.size()+"");
 
                 Float aveRating = Float.parseFloat(ratingTotal+"")/ratingArray.size();
                 System.out.println(aveRating);

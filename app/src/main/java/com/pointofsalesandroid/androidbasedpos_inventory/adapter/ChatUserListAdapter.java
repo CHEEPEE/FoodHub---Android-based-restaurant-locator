@@ -12,6 +12,8 @@ import com.pointofsalesandroid.androidbasedpos_inventory.models.ChatUserListMode
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by Keji's Lab on 26/11/2017.
  */
@@ -23,8 +25,11 @@ public class ChatUserListAdapter extends RecyclerView.Adapter<ChatUserListAdapte
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         public TextView displayname;
+
+        public CircleImageView usericon;
         public MyViewHolder(View view){
             super(view);
+            usericon = (CircleImageView) view.findViewById(R.id.usericon);
                displayname = (TextView) view.findViewById(R.id.displayname);
         }
     }
@@ -49,8 +54,8 @@ public class ChatUserListAdapter extends RecyclerView.Adapter<ChatUserListAdapte
                 mOnItemClickLitener.onItemClick(v,position);
             }
         });
+        GlideApp.with(context).load(chatUserListModelArrayList.get(position).getUserPhoto()).placeholder(R.drawable.image_placeholder).centerCrop().into(holder.usericon);
     }
-
     @Override
     public int getItemCount() {
         return chatUserListModelArrayList.size();

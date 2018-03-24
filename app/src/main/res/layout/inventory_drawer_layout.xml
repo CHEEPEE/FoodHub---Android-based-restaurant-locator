@@ -119,7 +119,7 @@
         android:drawableLeft="@drawable/ic_timeline_black_24dp"
         android:drawablePadding="10dp"
         android:drawableTint="@color/colorWhite"
-        android:text="Reports"
+        android:text="Ratings"
         android:textColor="@color/colorWhite"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"

@@ -92,7 +92,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
         itemCode = (EditText)findViewById(R.id.fMenuCode);
         itemPrice = (EditText) findViewById(R.id.fitemPrice);
         addCategory = (FloatingActionButton) findViewById(R.id.add_category);
-        addItemVariant = (Button) findViewById(R.id.btnAddVariant);
+
 
         spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -181,14 +181,7 @@ public class AddToInventoryRestuarant extends AppCompatActivity {
             }
         });
 
-        addItemVariant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (validateForm(itemName,itemCode,itemPrice)){
-                    uploadItemBannerVariant(bannerUri);
-                }
-            }
-        });
+
 
 
     }

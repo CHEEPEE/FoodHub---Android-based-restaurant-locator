@@ -11,8 +11,11 @@ public class ChatDataModel {
     String timestamp;
     String username;
     String userID;
+    String userImg;
 
-
+    public String getUserImg(){
+        return userImg;
+    }
     public String getMsgkey(){
         return  msgkey;
     }
@@ -44,6 +47,10 @@ public class ChatDataModel {
     }
     public void setUserID(String uid){
         this.userID = uid;
+    }
+    public void setUserImg(String url){
+        this.userImg = url;
+
     }
 }
 

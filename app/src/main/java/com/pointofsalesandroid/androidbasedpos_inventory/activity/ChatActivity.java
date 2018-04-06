@@ -54,6 +54,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         chatToolBar = (Toolbar) findViewById(R.id.inventoryToolbar);
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         chatListRecycleView = (RecyclerView) findViewById(R.id.chatListRecycleView);
@@ -101,6 +102,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 chatGetConvo(chatUserListModelArrayList.get(position).getUserID());
+                chatToolBar.setTitle(chatUserListModelArrayList.get(position).getDisplayName());
             }
         });
 

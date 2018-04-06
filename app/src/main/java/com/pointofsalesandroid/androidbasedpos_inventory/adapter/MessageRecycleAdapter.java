@@ -84,6 +84,12 @@ public class MessageRecycleAdapter extends RecyclerView.Adapter<MessageRecycleAd
             }catch (NullPointerException e){
                 System.out.println(e);
             }
+            holder.imgIconOther.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
 
         }else {
             holder.imgIconUser.setVisibility(View.VISIBLE);

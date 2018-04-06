@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Stock Management App</string>
+    <string name="app_name">FoodHub Restaurant Owner</string>
     <string name="logInGoolge">Login with Google+</string>
     <string name="logInFacebook">Login with Facebook</string>
     <string name="addItem">Add Item</string>
